@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//OpenMRS//DTD OpenMRS Config 1.2//EN" "http://resources.openmrs.org/doctype/config-1.2.dtd">
+
+<module configVersion="1.2">
+	
+	<!-- Base Module Properties -->
+	<id>programOver</id>
+	<name>Program Statistics</name>
+	<version>0.15</version>
+	<package>org.openmrs.module.@MODULE_ID@</package>
+	<author>MANIRAGENA AND KAYIGANWA</author>
+	<description>
+		Useful for statistics of patients.
+	</description>
+
+	<activator>@MODULE_PACKAGE@.ProgramOverActivator</activator>
+	
+	<!-- <updateURL>https://dev.openmrs.org/modules/download/@MODULE_ID@/update.rdf</updateURL> -->
+	<!-- /Base Module Properties -->
+	
+	<require_version>1.2.0.3400</require_version>
+	
+	<!-- Extensions -->
+	<extension>
+		<point>org.openmrs.tracmodule.list</point>
+		<class>@MODULE_PACKAGE@.extension.html.AdminList</class>
+	</extension>
+	
+	
+	<!-- AOP
+	<advice>
+		<point>org.openmrs.api.FormService</point>
+		<class>@MODULE_PACKAGE@.advice.DuplicateFormAdvisor</class>
+	</advice>
+	 /AOP -->
+	
+	
+	<!--   Required Privileges -->
+	<privilege>
+		<name>View Program Statistics Module</name>
+		<description>Allows users to access Program Statistics Module</description>
+	</privilege>
+	
+	<privilege>
+		<name>View Patient Details in Program Statistics Module</name>
+		<description>Allows users to view Patient Details in Program Statistics Module</description>
+	</privilege>
+	
+	 <!--  /Required Privileges  -->
+
+
+
+	<globalProperty>
+		<property>@MODULE_ID@.listOfARVsDrugs</property>
+		<defaultValue>633,814,796,628,749,794,795,635,631,5424,625,792,802,5811,797,630,2833,2203,1613</defaultValue> 
+		<description>A list of ARVs Drugs. </description> 		
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.listOfFirstLineDrugs</property>
+		<defaultValue>633,814,796,628,635,631,5424,625,792,802,5811,797,630,2833,2203,1613</defaultValue> 
+		<description>A list of First Line Drugs. </description> 		
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.listOfSecondLineDrugs</property>
+		<defaultValue>795,749,794</defaultValue> 
+		<description>A list of Second Line Drugs. </description> 		
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.listOfProphylaxisDrugs</property>
+		<defaultValue>916,747,92</defaultValue> 
+		<description>A list of Prophylaxis Drugs. </description> 		
+		</globalProperty>
+		
+		<globalProperty>
+		<property>@MODULE_ID@.listOfTBDrugs</property>
+		<defaultValue>656, 767, 745, 5829, 438, 1411, 1417, 1406, 740, 1418, 755, 955, 1414,1413, 1419, 1415, 1633, 450, 2459, 2460</defaultValue> 
+		<description>A list of TB Drugs. </description> 		
+		</globalProperty>
+		
+		<globalProperty>
+		<property>@MODULE_ID@.listOfAnswersToResultOfHIVTest</property>
+		<defaultValue>664, 703</defaultValue> 
+		<description>A list of TB Drugs. </description> 		
+		</globalProperty>
+		
+		<globalProperty>
+		<property>@MODULE_ID@.exitFromCareConceptId</property>
+		<defaultValue>1811</defaultValue> 
+		<description>Exit From Care Concept. </description> 		
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.exitFromCareDiedConceptId</property>
+		<defaultValue>1742</defaultValue> 
+		<description>Exit From Care Died Concept. </description> 		
+		</globalProperty>
+		
+		<globalProperty>
+		<property>@MODULE_ID@.exitFromCareTransferredOutConceptId</property>
+		<defaultValue>1744</defaultValue> 
+		<description>Exit From Care Transferred Out Concept. </description> 		
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.transferredInConceptId</property>
+		<defaultValue>2536</defaultValue> 
+		<description>Transfer in Concept. </description> 		
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.yesAsAnswerToTransferredInConceptId</property>
+		<defaultValue>1065</defaultValue> 
+		<description>Yes As Answer To Transfer in Concept. </description> 		
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.resultForHIVTestConceptId</property>
+		<defaultValue>2169</defaultValue> 
+		<description>Result For HIV Test Concept . </description> 		
+		</globalProperty>
+		
+		<globalProperty>
+		<property>@MODULE_ID@.indeterminateConceptId</property>
+		<defaultValue>1138</defaultValue> 
+		<description>Indeterminate as result Concept . </description> 		
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.cd4CountConceptId</property>
+		<defaultValue>5497</defaultValue> 
+		<description>CD4 Count concept. </description> 		
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.tbScreeningConceptId</property>
+		<defaultValue>2136</defaultValue> 
+		<description>TB Screening Concept. </description> 		
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.positiveConceptId</property>
+		<defaultValue>703</defaultValue> 
+		<description>TB Screening Concept. </description> 		
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.negativeConceptId</property>
+		<defaultValue>664</defaultValue> 
+		<description>TB Screening Concept. </description> 		
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.dateResultOfHIVTestReceived</property>
+		<defaultValue>6549</defaultValue> 
+		<description>Date Result Of HIV Test Received. </description> 		
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.whoStageConceptId</property>
+		<defaultValue>1480</defaultValue> 
+		<description>Who Stage Concept. </description> 		
+		</globalProperty>
+		
+		<globalProperty>
+		<property>@MODULE_ID@.currentWhoHIVStageConceptId</property>
+		<defaultValue>5356</defaultValue> 
+		<description>Current Who HIV Stage Concept. </description> 		
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.whoStageAtTransferInConceptId</property>
+		<defaultValue>2527</defaultValue> 
+		<description>Who Stage at Transfer In Concept. </description> 		
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.whoStageOneAdultConceptId</property>
+		<defaultValue>1204</defaultValue> 
+		<description>Who Stage One Adult Concept. </description> 		
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.whoStageTwoAdultConceptId</property>
+		<defaultValue>1205</defaultValue> 
+		<description>Who Stage Two Adult Concept. </description> 		
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.whoStageThreeAdultConceptId</property>
+		<defaultValue>1206</defaultValue> 
+		<description>Who Stage Three Adult Concept. </description> 		
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.whoStageFourAdultConceptId</property>
+		<defaultValue>1207</defaultValue> 
+		<description>Who Stage Four Adult Concept. </description> 		
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.whoStageOnePedsConceptId</property>
+		<defaultValue>1220</defaultValue> 
+		<description>Who Stage One Peds Concept. </description> 		
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.whoStageTwoPedsConceptId</property>
+		<defaultValue>1221</defaultValue> 
+		<description>Who Stage Two Peds Concept . </description> 		
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.whoStageThreePedsConceptId</property>
+		<defaultValue>1222</defaultValue> 
+		<description>Who Stage Three Peds Concept. </description> 		
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.whoStageFourPedsConceptId</property>
+		<defaultValue>1223</defaultValue> 
+		<description>Who Stage Four Peds Concept. </description> 		
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.unknownWhoStageConceptId</property>
+		<defaultValue>1067</defaultValue> 
+		<description>Who Stage Four Peds Concept. </description> 		
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.hivProgramId</property>
+		<defaultValue>2</defaultValue> 
+		<description>HIV Program. </description> 	
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.pmtctProgramId</property>
+		<defaultValue>2</defaultValue> 
+		<description>PMTCT Program. </description> 	
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.pcrEncounterId</property>
+		<defaultValue>7</defaultValue> 
+		<description>PCR Encounter Id. </description> 	
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.serologyTestAt9MonthId</property>
+		<defaultValue>8</defaultValue> 
+		<description>Serology Test at 9 Month. </description> 	
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.serologyTestAt18MonthId</property>
+		<defaultValue>8</defaultValue> 
+		<description>Serology Test at 18 Month. </description> 	
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.cpnEncounterId</property>
+		<defaultValue>5</defaultValue> 
+		<description>CPN Encounter. </description> 	
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.maternityEncounterId</property>
+		<defaultValue>6</defaultValue> 
+		<description>Maternity Encounter. </description> 	
+		</globalProperty> 
+		
+		
+		<globalProperty>
+		<property>@MODULE_ID@.estimatedDateOfConfinement</property>
+		<defaultValue>5596</defaultValue> 
+		<description>Estimated Date Of Confinement. </description> 	
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.HIVTestInDeliveryRoom</property>
+		<defaultValue>6247</defaultValue> 
+		<description>HIV Test In Delivery Room. </description> 	
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.motherFollowUpEncounterId</property>
+		<defaultValue>7</defaultValue> 
+		<description>Mother Follow up Encounter. </description> 	
+		</globalProperty> 
+		
+		
+		<globalProperty>
+		<property>@MODULE_ID@.rapidPlasminReagentConceptId</property>
+		<defaultValue>1478</defaultValue> 
+		<description>Rapid Plasmin Reagent. </description> 	
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.listOfAnswersToRapidPlasminReagent</property>
+		<defaultValue>1228,1229</defaultValue> 
+		<description>List Of Answers To Rapid Plasmin Reagent. </description> 	
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.reactiveAsfAnswerToRapidPlasminReagentConceptId</property>
+		<defaultValue>1228</defaultValue> 
+		<description>Reactive as Answer To Rapid Plasmin Reagent. </description> 	
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.returnVisitDateConceptId</property>
+		<defaultValue>5096</defaultValue> 
+		<description>Return Visit Date Concept. </description> 	
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.breastedExclusivelyConceptId</property>
+		<defaultValue>5526</defaultValue> 
+		<description>Breasted Exclusively Concept. </description> 	
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.usingFormulaConceptId</property>
+		<defaultValue>5254</defaultValue> 
+		<description>Using Formula Concept. </description> 	
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.testingStatusOfPartnerConceptId</property>
+		<defaultValue>3082</defaultValue> 
+		<description>Testing Status Of Partner Concept. </description> 	
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.reasonForVisitConceptId</property>
+		<defaultValue>6189</defaultValue> 
+		<description>Reason for visit Concept. </description> 	
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.pharmacyVisitAsAnswerToReasonForVisitConceptId</property>
+		<defaultValue>6191</defaultValue> 
+		<description>Pharmacy Visit As Answer To Reason For Visit Concept. </description> 	
+		</globalProperty> 
+		
+		<globalProperty>
+		<property>@MODULE_ID@.outPatientConsultationAsAnswerToReasonForVisitConceptId</property>
+		<defaultValue>1651</defaultValue> 
+		<description>Out Patient Consultation As Answer To Reason For Visit Concept. </description> 	
+		</globalProperty> 
+		
+
+	<!--
+	<dwr>
+		<allow>
+			<create creator="new" javascript="DWRFormEntryService">
+				<param name="class" value="org.openmrs.module.@MODULE_ID@.web.DWRFormEntryService"/>
+				<include method="enterForm"/>
+			</create>
+		</allow>
+
+		<signatures>
+			<![CDATA[
+			import @MODULE_PACKAGE@.web.DWRFormEntryService;
+			DWRFormEntryService.enterForm(Integer patientId, Integer formId, boolean useEncounter, List<String> fields);
+			]]>
+		</signatures>	
+	</dwr>
+	-->
+	
+	<!-- Servlets -->
+	<!-- Accessed through the url /pageContext()/moduleServlet/<moduleId>/<servlet-name> 
+	<servlet>
+		<servlet-name>formDownload</servlet-name>
+		<servlet-class>@MODULE_PACKAGE@.web.FormDownloadServlet</servlet-class>
+	</servlet>
+	-->
+	<!-- /Servlets -->
+	
+	
+	<!-- Internationalization -->
+	<!-- All message codes should start with @MODULE_ID@.* -->
+	<messages>
+		<lang>en</lang>
+		<file>messages.properties</file>
+	</messages>
+	<messages>
+		<lang>fr</lang>
+		<file>messages_fr.properties</file>
+	</messages>
+	<messages>
+		<lang>es</lang>
+		<file>messages_es.properties</file>
+	</messages>
+	<!-- /Internationalization -->
+	
+</module>
+
