@@ -24,7 +24,7 @@ import org.openmrs.api.context.Context;
  *
  */
 public class GlobalProperties {
-	
+		
 	
 	public static String gpGetListOfARVsDrugs(){
 		  return Context.getAdministrationService().getGlobalProperty("programOver.listOfARVsDrugs");
