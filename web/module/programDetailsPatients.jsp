@@ -42,6 +42,7 @@
 	<thead>
 		<tr>
 			<th><b>Number</b></th>
+			<th><b>Identifier</b></th>
 			<th><b>Given Name</b></th>
 			<th><b>Family Name</b></th>
 			<th><b>Age</b></th>
@@ -57,14 +58,15 @@
 		<c:forEach var="list" items="${patients}" varStatus="status">
 			<tr>
 				<td>${status.count}</td>
-				<td>${list[0].givenName}</td>
-				<td>${list[0].familyName}</td>
-				<td>${list[0].age}</td>
+				<td>${list[0].identifier}</td>
+				<td>${list[0].patient.givenName}</td>
+				<td>${list[0].patient.familyName}</td>
+				<td>${list[0].patient.age}</td>
 
 				<td><img
-					src="${pageContext.request.contextPath}/images/${list[0].gender == 'M' ? 'male' : 'female'}.gif" /></td>				
+					src="${pageContext.request.contextPath}/images/${list[0].patient.gender == 'M' ? 'male' : 'female'}.gif" /></td>				
 				<td><a
-					href="${pageContext.request.contextPath}/patientDashboard.form?patientId=${list[0].patientId}">View
+					href="${pageContext.request.contextPath}/patientDashboard.form?patientId=${list[0].patient.patientId}">View
 				Dashboard</a></td>
 				<td>${list[1]}</td>
 				<td>${list[3]}</td>	

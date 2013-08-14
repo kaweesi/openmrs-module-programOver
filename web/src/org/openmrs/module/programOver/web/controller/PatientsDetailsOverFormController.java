@@ -57,6 +57,7 @@ public class PatientsDetailsOverFormController extends ParameterizableViewContro
 	
 	@SuppressWarnings("unchecked")
 	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		List<Object[]> listPatientHistory = new ArrayList<Object[]>();
 		
 		Map<String, Object> model = new HashMap<String, Object>();
 		int programId = Integer.parseInt(request.getParameter("programId"));
@@ -78,7 +79,8 @@ public class PatientsDetailsOverFormController extends ParameterizableViewContro
 		List<Object> returnVisitDates= new ArrayList<Object>();
 		List<Object> consultationDates= new ArrayList<Object>();
 		List<Object> drugTitles= new ArrayList<Object>();
-		List<Object[]> listPatientHistory = (List<Object[]>) request.getSession().getAttribute(
+		
+		 listPatientHistory = (List<Object[]>) request.getSession().getAttribute(
 		    "patientSize_" + (Integer.parseInt(request.getParameter("lineNumber")) - 1));
 		Object eventDate = null;
 		Object eventDate1= null;
@@ -141,7 +143,8 @@ public class PatientsDetailsOverFormController extends ParameterizableViewContro
 		model.put("eventDate", eventDate);
 		model.put("patients", listPatientHistory);
 		for (Object[] objects : listPatientHistory) {
-		Patient p=	(Patient) objects[0];
+			
+		//Patient p=	(Patient) objects[0];
 		//System.out.println(">>>>>>>>patient ident"+p.getPatientIdentifier().getIdentifier().toString());
 		
 	        

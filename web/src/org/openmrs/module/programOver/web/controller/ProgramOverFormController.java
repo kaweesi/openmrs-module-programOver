@@ -93,10 +93,10 @@ public class ProgramOverFormController extends ParameterizableViewController {
 		Date maxAge = null;
 		
 		if (mxAge != null && mxAge.length() != 0) {
-			maxAge = UsageStatsUtils.calculateAge((Integer.parseInt(mxAge)));
+			maxAge = UsageStatsUtils.calculateAge((Integer.parseInt(mxAge)),endDate);
 		}
 		if (mnAge != null && mnAge.length() != 0) {
-			minAge = UsageStatsUtils.calculateAge((Integer.parseInt(mnAge)));
+			minAge = UsageStatsUtils.calculateAge((Integer.parseInt(mnAge)),endDate);
 		}
 		
 		String[] criteriaWithParameters = pg.getAllCriteriaBasedOnProgram(programId);

@@ -33,10 +33,13 @@ import org.hibernate.SessionFactory;
 
 import org.openmrs.Concept;
 import org.openmrs.Patient;
+import org.openmrs.Person;
+import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.programOver.GlobalProperties;
 import org.openmrs.module.programOver.advice.UsageStatsUtils;
 import org.openmrs.module.programOver.db.ProgramOverviewDAO;
+import org.openmrs.module.programOver.utils.QueryUtility;
 import org.openmrs.module.regimenhistory.Regimen;
 import org.openmrs.module.regimenhistory.RegimenComponent;
 import org.openmrs.module.regimenhistory.RegimenUtils;
@@ -71,6 +74,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 	@SuppressWarnings("unchecked")
 	public List<Object[]> getPatientWhoDied(int programId, Date startDate, Date endDate, String gender, Date minAge,
 	                                        Date maxAge) {
+		PatientService patientService = Context.getPatientService();
 		
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		@SuppressWarnings("unused")
@@ -97,7 +101,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 			        + programId);
 			
 			List<Integer> patientIds = query.list();
-			
+			log.info(">>>>>>>>>>>>>>minage date >>>>>>>>>"+minAge);
 			for (Integer patientId : patientIds) {
 				
 				SQLQuery queryDate = session
@@ -114,8 +118,8 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 
 				{
 					
-					patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId), dateOfDeath.get(0),
-					        deathDate };
+					patientSatatus = new Object[] { patientService.getPatient(patientId).getPatientIdentifier(),
+					        dateOfDeath.get(0), deathDate };
 					listPatientHistory.add(patientSatatus);
 					
 				}
@@ -131,6 +135,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 	@SuppressWarnings("unchecked")
 	public List<Object[]> getAllTransferedPatient(int programId, Date startDate, Date endDate, String gender, Date minAge,
 	                                              Date maxAge) {
+		PatientService patientService = Context.getPatientService();
 		
 		List<Object[]> listPatientHistory = new ArrayList<Object[]>();
 		Object patientSatatus[] = null;
@@ -160,6 +165,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 			List<Integer> patientIds = query.list();
 			
 			for (Integer patientId : patientIds) {
+				
 				SQLQuery queryDate1 = session
 				        .createSQLQuery("select cast(max(obs_datetime)as DATE) from obs where concept_id = "
 				                + Integer.parseInt(GlobalProperties.gpGetExitFromCareConceptId())
@@ -175,7 +181,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 
 				{
 					
-					patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
+					patientSatatus = new Object[] { patientService.getPatient(patientId).getPatientIdentifier(),
 					        maxObsDateTime.get(0), transferredOutdate };
 					listPatientHistory.add(patientSatatus);
 				}
@@ -194,6 +200,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 	public List<Object[]> getAllPatientPharmacyVisit(int programId, Date startDate, Date endDate, String gender,
 	                                                 Date minAge, Date maxAge) {
 		
+		PatientService patientService = Context.getPatientService();
 		List<Object[]> listPatientHistory = new ArrayList<Object[]>();
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		
@@ -291,7 +298,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 						//							for (Regimen r : regimens) {
 						//								components = r.getComponents();
 						//							}
-						patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
+						patientSatatus = new Object[] { patientService.getPatient(patientId).getPatientIdentifier(),
 						        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0), lastReturnVisitDay,
 						        lastPharmacyDates.get(0), lastPharmacyVisitDate };
 						listPatientHistory.add(patientSatatus);
@@ -352,6 +359,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 	@SuppressWarnings("unchecked")
 	public List<Object[]> getAllConsultedPatient(int programId, Date startDate, Date endDate, String gender, Date minAge,
 	                                             Date maxAge) {
+		PatientService patientService = Context.getPatientService();
 		
 		List<Object[]> listPatientHistory = new ArrayList<Object[]>();
 		Object patientSatatus[] = null;
@@ -445,7 +453,8 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 								//								components = r.getComponents();
 								//							}
 								
-								patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
+								patientSatatus = new Object[] {
+								        Context.getPatientService().getPatient(patientId).getPatientIdentifier(),
 								        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
 								        lastReturnVisitDay, consultationDate.get(0), lastConsultation };
 								listPatientHistory.add(patientSatatus);
@@ -487,7 +496,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 							//							components = r.getComponents();
 							//						}
 							
-							patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
+							patientSatatus = new Object[] { patientService.getPatient(patientId).getPatientIdentifier(),
 							        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
 							        lastReturnVisitDay, consultationDate.get(0), lastConsultation };
 							listPatientHistory.add(patientSatatus);
@@ -514,146 +523,68 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 	                                        Date maxAge) {
 		
 		// TODO Auto-generated method stub	
+		PatientService patientService = Context.getPatientService();
 		List<Object[]> listPatientHistory = new ArrayList<Object[]>();
 		Object patientSatatus[] = null;
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		try {
-			Session session = getSessionFactory().getCurrentSession();
-			String lastEncountDate = new String("Last Encounter Date");
-			String lastReturnVisitDay = new String("Last Return Visit Date");
-			String regimen = new String("Patient Regimen");
-			List<Regimen> regimens = new ArrayList<Regimen>();
-			Set<RegimenComponent> components = new HashSet<RegimenComponent>();
-			
-			Date threeMonthsBeforeEndDate = UsageStatsUtils.addDaysToDate(endDate, -3);
-			
-			SQLQuery query1 = session.createSQLQuery("select distinct pg.patient_id from patient_program pg "
-			        + "inner join person pe on pg.patient_id = pe.person_id "
-			        + "inner join patient pa on pg.patient_id = pa.patient_id "
-			        + "inner join orders ord on pg.patient_id = ord.patient_id "
-			        + "inner join drug_order do on ord.order_id = do.order_id "
-			        + "inner join drug d on do.drug_inventory_id = d.drug_id "
-			        + "where pg.patient_id in (select person_id from person "
-			        + getPatientsAttributes(gender, minAge, maxAge) + ") " + " and ord.concept_id IN ("
-			        + GlobalProperties.gpGetListOfARVsDrugs()
-			        + ") and ord.discontinued = 0 and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 "
-			        + "and pa.voided = 0 and (cast(ord.start_date as DATE)) <= '" + df.format(endDate)
-			        + "' and pg.program_id= " + programId + " and pg.date_enrolled <= '" + df.format(endDate) + "' ");
-			
-			List<Integer> patientIds1 = query1.list();
-			
-			for (Integer patientId : patientIds1) {
-				
-				SQLQuery query2 = session.createSQLQuery("select distinct o.person_id from obs o where o.concept_id = "
-				        + Integer.parseInt(GlobalProperties.gpGetExitFromCareConceptId())
-				        + " and (cast(o.obs_datetime as DATE)) <= '" + df.format(endDate)
-				        + "' and o.voided = 0 and o.person_id=" + patientId);
-				
-				List<Integer> patientIds2 = query2.list();
-				
-				if (patientIds2.size() == 0) {
-					
-					try {
-						
-						SQLQuery queryDate1 = session
-						        .createSQLQuery("select cast(max(encounter_datetime)as DATE) from encounter where "
-						                + "(select(cast(max(encounter_datetime)as Date))) <= '"
-						                + df.format(endDate)
-						                + "' and (select cast(max(encounter_datetime)as DATE)) is not null and voided = 0 and patient_id = "
-						                + patientId);
-						
-						List<Date> maxEnocunterDateTime = queryDate1.list();
-						
-						SQLQuery queryDate2 = session
-						        .createSQLQuery("select cast(max(value_datetime) as DATE ) "
-						                + "from obs where (select(cast(max(value_datetime)as Date))) <= '"
-						                + df.format(endDate)
-						                + "' and concept_id = "
-						                + Integer.parseInt(GlobalProperties.gpGetReturnVisitDateConceptId())
-						                + " and (select cast(max(value_datetime) as DATE )) is not null and voided = 0 and person_id = "
-						                + patientId);
-						
-						List<Date> maxReturnVisitDay = queryDate2.list();
-						
-						if (((maxReturnVisitDay.get(0)) != null) && (maxEnocunterDateTime.get(0) != null)) {
-							
-							if (((maxEnocunterDateTime.get(0).getTime()) >= threeMonthsBeforeEndDate.getTime() && (maxEnocunterDateTime
-							        .get(0).getTime()) <= endDate.getTime())
-							        || ((maxReturnVisitDay.get(0).getTime()) >= threeMonthsBeforeEndDate.getTime() && (maxReturnVisitDay
-							                .get(0).getTime()) <= endDate.getTime())) {
-								
-								if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-								        .getRegimenList().size() != 0)
-									regimens = RegimenUtils.getRegimenHistory(
-									    Context.getPatientService().getPatient(patientId)).getRegimenList();
-								
-								for (Regimen r : regimens) {
-									components = r.getComponents();
-								}
-								
-								patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
-								        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
-								        lastReturnVisitDay };
-								listPatientHistory.add(patientSatatus);
-								
-							}
-						}
-
-						else if (((maxReturnVisitDay.get(0)) == null) && (maxEnocunterDateTime.get(0) != null)) {
-							
-							if ((maxEnocunterDateTime.get(0).getTime()) >= threeMonthsBeforeEndDate.getTime()
-							        && (maxEnocunterDateTime.get(0).getTime()) <= endDate.getTime()) {
-								
-								if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-								        .getRegimenList().size() != 0)
-									regimens = RegimenUtils.getRegimenHistory(
-									    Context.getPatientService().getPatient(patientId)).getRegimenList();
-								
-								for (Regimen r : regimens) {
-									components = r.getComponents();
-								}
-								
-								patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
-								        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
-								        lastReturnVisitDay };
-								listPatientHistory.add(patientSatatus);
-								
-							}
-						}
-
-						else if ((maxReturnVisitDay.get(0) != null)
-						        && (maxReturnVisitDay.get(0).getTime()) > endDate.getTime())
-
-						{
-							
-							if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-							        .getRegimenList().size() != 0)
-								regimens = RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-								        .getRegimenList();
-							
-							for (Regimen r : regimens) {
-								components = r.getComponents();
-							}
-							
-							patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
-							        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
-							        lastReturnVisitDay };
-							listPatientHistory.add(patientSatatus);
-							
-						}
-					}
-					catch (Exception e) {
-						e.getMessage();
-						// TODO: handle exception
-					}
-				}
-				
-			}
-		}
 		
-		catch (Exception e) {
-			e.getMessage();
-			// TODO: handle exception
+		Session session = getSessionFactory().getCurrentSession();
+		String lastEncountDate = new String("Last Encounter Date");
+		String lastReturnVisitDay = new String("Last Return Visit Date");
+		String regimen = new String("Patient Regimen");
+		List<Regimen> regimens = new ArrayList<Regimen>();
+		Set<RegimenComponent> components = new HashSet<RegimenComponent>();
+		
+		Date threeMonthsBeforeEndDate = UsageStatsUtils.addDaysToDate(endDate, -3);
+		
+		SQLQuery query1 = session.createSQLQuery("select distinct pg.patient_id from patient_program pg "
+		        + "inner join person pe on pg.patient_id = pe.person_id "
+		        + "inner join patient pa on pg.patient_id = pa.patient_id "
+		        + "inner join orders ord on pg.patient_id = ord.patient_id "
+		        // + "inner join drug_order do on ord.order_id = do.order_id "
+		        //+ "inner join drug d on do.drug_inventory_id = d.drug_id "
+		        + "where ((pg.date_completed is null) or(cast(pg.date_completed as DATE)> ' " + df.format(endDate) + " ')) "		      
+		        + " and pg.patient_id in (select person_id from person " + getPatientsAttributes(gender, minAge, maxAge)
+		       
+		        + ") " + " and ord.concept_id IN (" + GlobalProperties.gpGetListOfARVsDrugs()
+		        + ") and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 "
+		        + "and pa.voided = 0 and (cast(ord.start_date as DATE)) <= '" + df.format(endDate) + "' and pg.program_id= "
+		        + programId + " and pg.date_enrolled <= '" + df.format(endDate) + "' ");
+		
+		log.info(" Patients on ART>>>>>>>>>>" + query1.toString());
+		
+		List<Integer> patientIds1 = query1.list();
+		
+		for (Integer patientId : patientIds1) {
+			Person person =Context.getPersonService().getPerson(patientId);			
+			Date birthDate =person.getBirthdate();
+			int age = UsageStatsUtils.calculateAgeFromBirthDateToAnyDate(birthDate, endDate);
+			
+			
+				SQLQuery queryDate1 = session.createSQLQuery(QueryUtility.createPatientMaxEncounterQuery(patientId, endDate));				
+			
+			List<Date> maxEnocunterDateTime = queryDate1.list();
+			
+			SQLQuery queryDate2 = session.createSQLQuery(QueryUtility.CreatePatientMaxReturnVisitDay(patientId, endDate));
+			
+			
+			/*("select cast(max(value_datetime) as DATE ) "
+			        + "from obs where (select(cast(max(value_datetime)as Date))) <= '" + df.format(endDate)
+			        + "' and concept_id = " + Integer.parseInt(GlobalProperties.gpGetReturnVisitDateConceptId())
+			        + " and (select cast(max(value_datetime) as DATE )) is not null and voided = 0 and person_id = "
+			        + patientId);*/
+			
+			List<Date> maxReturnVisitDay = queryDate2.list();
+			
+			patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId).getPatientIdentifier(),
+			        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0), lastReturnVisitDay };
+			listPatientHistory.add(patientSatatus);
+				
+			
+			
+			
+			
+			
 		}
 		return listPatientHistory;
 		
@@ -666,7 +597,6 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 	@SuppressWarnings("unchecked")
 	public List<Object[]> getAllProphylaxisPatient(int programId, Date startDate, Date endDate, String gender, Date minAge,
 	                                               Date maxAge) {
-		
 		List<Object[]> listPatientHistory = new ArrayList<Object[]>();
 		Object patientSatatus[] = null;
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
@@ -683,15 +613,14 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 		try {
 			
 			SQLQuery query1 = session.createSQLQuery("select distinct pg.patient_id from patient_program pg "
-			        + "inner join person pe on pg.patient_id = pe.person_id "
-			        + "inner join patient pa on pg.patient_id = pa.patient_id "
-			        + "inner join orders ord on pg.patient_id = ord.patient_id "
-			        + "inner join drug_order do on ord.order_id = do.order_id "
-			        /* + "inner join drug d on do.drug_inventory_id = d.drug_id "*/
-			        + "where pg.patient_id in (select person_id from person "
+					+ "inner join person pe on pg.patient_id = pe.person_id "
+					+ "inner join patient pa on pg.patient_id = pa.patient_id "
+					+ "inner join orders ord on pg.patient_id = ord.patient_id "
+			        + "where ((pg.date_completed is null) or(cast(pg.date_completed as DATE)> ' " + df.format(endDate) + " ')) "
+			        + "and pg.patient_id in (select person_id from person "
 			        + getPatientsAttributes(gender, minAge, maxAge) + ") " + " and ord.concept_id IN ("
 			        + GlobalProperties.gpGetListOfProphylaxisDrugs()
-			        + ") and ord.discontinued = 0 and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 "
+			        + ")and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 "
 			        + " and pg.date_enrolled <= '" + df.format(endDate)
 			        + "' and pa.voided = 0 and (cast(ord.start_date as DATE)) <= '" + df.format(endDate)
 			        + "' and pg.program_id= " + programId);
@@ -701,33 +630,22 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 			for (Integer patientId : patientIds1) {
 				
 				SQLQuery query2 = session.createSQLQuery("select distinct pg.patient_id from patient_program pg "
-				        + "inner join person pe on pg.patient_id = pe.person_id "
-				        + "inner join patient pa on pg.patient_id = pa.patient_id "
-				        + "inner join orders ord on pg.patient_id = ord.patient_id "
-				        + "inner join drug_order do on ord.order_id = do.order_id "
-				        + "inner join drug d on do.drug_inventory_id = d.drug_id "
-				        + "where pg.patient_id in (select person_id from person "
-				        + getPatientsAttributes(gender, minAge, maxAge) + ") " + " and ord.concept_id IN ("
-				        + GlobalProperties.gpGetListOfARVsDrugs() + ") "
-				        + "and ord.discontinued=0 and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 "
-				        + "and pa.voided = 0 and (cast(ord.start_date as DATE)) <= '" + df.format(endDate)
-				        + "' and pg.program_id= " + programId + " and pg.date_enrolled <= '" + df.format(endDate)
-				        + "' and pg.patient_id=" + patientId);
+					+ "inner join person pe on pg.patient_id = pe.person_id "
+					+ "inner join patient pa on pg.patient_id = pa.patient_id "
+					+ "inner join orders ord on pg.patient_id = ord.patient_id "
+					+ "where ord.concept_id IN ("
+					+ GlobalProperties.gpGetListOfARVsDrugs()
+					+ ") and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 "
+					+ "and pa.voided = 0 and (cast(ord.start_date as DATE)) <= '"
+					+ df.format(endDate)
+					+ "'"
+					+ " and pg.patient_id="
+					+ patientId);
 				
 				List<Integer> patientIds2 = query2.list();
 				
-				if (patientIds2.size() == 0) {
+				if (patientIds2.size() == 0) {		
 					
-					SQLQuery queryExited = session
-					        .createSQLQuery("select distinct o.person_id from obs o where o.concept_id = "
-					                + Integer.parseInt(GlobalProperties.gpGetExitFromCareConceptId())
-					                + " and (cast(o.obs_datetime as DATE)) <= '" + df.format(endDate)
-					                + "' and o.voided = 0 and o.person_id=" + patientId);
-					
-					List<Integer> patientIds3 = queryExited.list();
-					
-					if (patientIds3.size() == 0) {
-						
 						try {
 							
 							SQLQuery queryDate1 = session
@@ -748,79 +666,21 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 							                + " and (select cast(max(value_datetime) as DATE )) is not null and voided = 0 and person_id = "
 							                + patientId);
 							
-							List<Date> maxReturnVisitDay = queryDate2.list();
-							
-							if (((maxReturnVisitDay.get(0)) != null) && (maxEnocunterDateTime.get(0) != null)) {
-								
-								if (((maxEnocunterDateTime.get(0).getTime()) >= threeMonthsBeforeEndDate.getTime() && (maxEnocunterDateTime
-								        .get(0).getTime()) <= endDate.getTime())
-								        || ((maxReturnVisitDay.get(0).getTime()) >= threeMonthsBeforeEndDate.getTime() && (maxReturnVisitDay
-								                .get(0).getTime()) <= endDate.getTime())) {
+							List<Date> maxReturnVisitDay = queryDate2.list();		
 									
-									if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-									        .getRegimenList().size() != 0)
-										regimens = RegimenUtils.getRegimenHistory(
-										    Context.getPatientService().getPatient(patientId)).getRegimenList();
-									
-									for (Regimen r : regimens) {
-										components = r.getComponents();
-										
-										patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
-										        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
-										        lastReturnVisitDay };
-										listPatientHistory.add(patientSatatus);
-										
-									}
-								}
-
-								else if (((maxReturnVisitDay.get(0)) == null) && (maxEnocunterDateTime.get(0) != null)) {
-									
-									if ((maxEnocunterDateTime.get(0).getTime()) >= threeMonthsBeforeEndDate.getTime()
-									        && (maxEnocunterDateTime.get(0).getTime()) <= endDate.getTime()) {
-										
-										if (RegimenUtils
-										        .getRegimenHistory(Context.getPatientService().getPatient(patientId))
-										        .getRegimenList().size() != 0)
-											regimens = RegimenUtils.getRegimenHistory(
-											    Context.getPatientService().getPatient(patientId)).getRegimenList();
-										
-										for (Regimen r : regimens) {
-											components = r.getComponents();
-										}
-										
-										patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
-										        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
-										        lastReturnVisitDay };
-										listPatientHistory.add(patientSatatus);
-										
-									}
-								}
-
-								else if ((maxReturnVisitDay.get(0) != null)
-								        && (maxReturnVisitDay.get(0).getTime()) > endDate.getTime()) {
-									
-									if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-									        .getRegimenList().size() != 0)
-										regimens = RegimenUtils.getRegimenHistory(
-										    Context.getPatientService().getPatient(patientId)).getRegimenList();
-									
-									for (Regimen r : regimens) {
-										components = r.getComponents();
-									}
-									
-									patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
+									patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId).getPatientIdentifier(),
 									        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
 									        lastReturnVisitDay };
 									listPatientHistory.add(patientSatatus);
 									
 								}
-							}
-						}
+							
+						
 						catch (Exception e) {
 							e.printStackTrace();
 						}
 						
-					}
+					
 				}
 			}
 		}
@@ -829,6 +689,8 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 		}
 		
 		return listPatientHistory;
+		
+		
 		
 	}
 	
@@ -855,94 +717,46 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 			        + "inner join person pe on pg.patient_id = pe.person_id "
 			        + "inner join patient pa on pg.patient_id = pa.patient_id "
 			        + "inner join orders ord on pg.patient_id = ord.patient_id "
-			        + "inner join drug_order do on ord.order_id = do.order_id "
-			        + "inner join drug d on do.drug_inventory_id = d.drug_id "
-			        + "where pg.patient_id in (select person_id from person "
+			        // + "inner join drug_order do on ord.order_id = do.order_id "
+			        // + "inner join drug d on do.drug_inventory_id = d.drug_id "
+			        + "where ((pg.date_completed is null) or(cast(pg.date_completed as DATE)> ' " + df.format(endDate)  + " ')) "
+
+			        + " and pg.patient_id in (select person_id from person "
+
 			        + getPatientsAttributes(gender, minAge, maxAge) + ") " + " and ord.concept_id IN ("
 			        + GlobalProperties.gpGetListOfSecondLineDrugs() + ") "
-			        + "and ord.discontinued = 0 and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 "
+			        + " and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 "
 			        + "and pa.voided = 0 and (cast(ord.start_date as DATE)) <= '" + df.format(endDate)
 			        + "' and pg.program_id= " + programId);
 			
+			log.info(">>>>>>>>>>>>patient in second line" + query1.toString());
 			List<Integer> patientIds1 = query1.list();
 			
 			for (Integer patientId : patientIds1) {
 				
-				SQLQuery query2 = session.createSQLQuery("select distinct o.person_id from obs o where o.concept_id = "
-				        + Integer.parseInt(GlobalProperties.gpGetExitFromCareConceptId())
-				        + " and (cast(o.obs_datetime as DATE)) <= '" + endDate + "' and o.voided = 0 and o.person_id="
+				SQLQuery queryDate1 = session
+				        .createSQLQuery("select cast(max(encounter_datetime)as DATE) from encounter where "
+				                + "(select(cast(max(encounter_datetime)as Date))) <= '"
+				                + df.format(endDate)
+				                + "' and (select cast(max(encounter_datetime)as DATE)) is not null and voided = 0 and patient_id = "
+				                + patientId);
+				
+				List<Date> maxEnocunterDateTime = queryDate1.list();
+				
+				SQLQuery queryDate2 = session.createSQLQuery("select cast(max(value_datetime) as DATE ) "
+				        + "from obs where (select(cast(max(value_datetime)as Date))) <= '" + df.format(endDate)
+				        + "' and concept_id = " + Integer.parseInt(GlobalProperties.gpGetReturnVisitDateConceptId())
+				        + " and (select cast(max(value_datetime) as DATE )) is not null and voided = 0 and person_id = "
 				        + patientId);
 				
-				List<Integer> patientIds2 = query2.list();
+				List<Date> maxReturnVisitDay = queryDate2.list();
 				
-				if (patientIds2.size() == 0) {
+				/*if (((maxReturnVisitDay.get(0)) != null) && (maxEnocunterDateTime.get(0) != null)) {
 					
-					SQLQuery queryDate1 = session
-					        .createSQLQuery("select cast(max(encounter_datetime)as DATE) from encounter where "
-					                + "(select(cast(max(encounter_datetime)as Date))) <= '"
-					                + df.format(endDate)
-					                + "' and (select cast(max(encounter_datetime)as DATE)) is not null and voided = 0 and patient_id = "
-					                + patientId);
-					
-					List<Date> maxEnocunterDateTime = queryDate1.list();
-					
-					SQLQuery queryDate2 = session.createSQLQuery("select cast(max(value_datetime) as DATE ) "
-					        + "from obs where (select(cast(max(value_datetime)as Date))) <= '" + df.format(endDate)
-					        + "' and concept_id = " + Integer.parseInt(GlobalProperties.gpGetReturnVisitDateConceptId())
-					        + " and (select cast(max(value_datetime) as DATE )) is not null and voided = 0 and person_id = "
-					        + patientId);
-					
-					List<Date> maxReturnVisitDay = queryDate2.list();
-					
-					if (((maxReturnVisitDay.get(0)) != null) && (maxEnocunterDateTime.get(0) != null)) {
-						
-						if (((maxEnocunterDateTime.get(0).getTime()) >= threeMonthsBeforeEndDate.getTime() && (maxEnocunterDateTime
-						        .get(0).getTime()) <= endDate.getTime())
-						        || ((maxReturnVisitDay.get(0).getTime()) >= threeMonthsBeforeEndDate.getTime() && (maxReturnVisitDay
-						                .get(0).getTime()) <= endDate.getTime())) {
-							
-							if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-							        .getRegimenList().size() != 0)
-								regimens = RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-								        .getRegimenList();
-							
-							for (Regimen r : regimens) {
-								components = r.getComponents();
-							}
-							
-							patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
-							        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
-							        lastReturnVisitDay };
-							listPatientHistory.add(patientSatatus);
-							
-						}
-					}
-
-					else if (((maxReturnVisitDay.get(0)) == null) && (maxEnocunterDateTime.get(0) != null)) {
-						
-						if ((maxEnocunterDateTime.get(0).getTime()) >= threeMonthsBeforeEndDate.getTime()
-						        && (maxEnocunterDateTime.get(0).getTime()) <= endDate.getTime()) {
-							
-							if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-							        .getRegimenList().size() != 0)
-								regimens = RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-								        .getRegimenList();
-							
-							for (Regimen r : regimens) {
-								components = r.getComponents();
-							}
-							
-							patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
-							        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
-							        lastReturnVisitDay };
-							listPatientHistory.add(patientSatatus);
-							
-						}
-					}
-
-					else if ((maxReturnVisitDay.get(0) != null) && (maxReturnVisitDay.get(0).getTime()) > endDate.getTime())
-
-					{
+					if (((maxEnocunterDateTime.get(0).getTime()) >= threeMonthsBeforeEndDate.getTime() && (maxEnocunterDateTime
+					        .get(0).getTime()) <= endDate.getTime())
+					        || ((maxReturnVisitDay.get(0).getTime()) >= threeMonthsBeforeEndDate.getTime() && (maxReturnVisitDay
+					                .get(0).getTime()) <= endDate.getTime())) {
 						
 						if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
 						        .getRegimenList().size() != 0)
@@ -953,14 +767,57 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 							components = r.getComponents();
 						}
 						
-						patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
-						        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0), lastReturnVisitDay };
+						patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId).getPatientIdentifier(),
+						        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
+						        lastReturnVisitDay };
 						listPatientHistory.add(patientSatatus);
 						
 					}
-					
 				}
+
+				else if (((maxReturnVisitDay.get(0)) == null) && (maxEnocunterDateTime.get(0) != null)) {
+					
+					if ((maxEnocunterDateTime.get(0).getTime()) >= threeMonthsBeforeEndDate.getTime()
+					        && (maxEnocunterDateTime.get(0).getTime()) <= endDate.getTime()) {
+						
+						if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
+						        .getRegimenList().size() != 0)
+							regimens = RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
+							        .getRegimenList();
+						
+						for (Regimen r : regimens) {
+							components = r.getComponents();
+						}
+						
+						patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId).getPatientIdentifier(),
+						        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
+						        lastReturnVisitDay };
+						listPatientHistory.add(patientSatatus);
+						
+					}
+				}
+
+				else if ((maxReturnVisitDay.get(0) != null) && (maxReturnVisitDay.get(0).getTime()) > endDate.getTime())
+
+				{
+					
+					if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
+					        .getRegimenList().size() != 0)
+						regimens = RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
+						        .getRegimenList();
+					
+					for (Regimen r : regimens) {
+						components = r.getComponents();
+					}
+					*/
+				patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId).getPatientIdentifier(),
+				        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0), lastReturnVisitDay };
+				listPatientHistory.add(patientSatatus);
+				
 			}
+			
+			//}
+			//}
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -1099,69 +956,16 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 							                + " and (select cast(max(value_datetime) as DATE )) is not null and voided = 0 and person_id = "
 							                + patientId);
 							
-							List<Date> maxReturnVisitDay = queryDate2.list();
-							
-							if (((maxReturnVisitDay.get(0)) != null) && (maxEnocunterDateTime.get(0) != null)) {
-								
-								if (((maxEnocunterDateTime.get(0).getTime()) >= threeMonthsBeforeEndDate.getTime() && (maxEnocunterDateTime
-								        .get(0).getTime()) <= endDate.getTime())
-								        || ((maxReturnVisitDay.get(0).getTime()) >= threeMonthsBeforeEndDate.getTime() && (maxReturnVisitDay
-								                .get(0).getTime()) <= endDate.getTime())) {
-									
-									if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-									        .getRegimenList().size() != 0)
-										regimens = RegimenUtils.getRegimenHistory(
-										    Context.getPatientService().getPatient(patientId)).getRegimenList();
-									
-									for (Regimen r : regimens) {
-										components = r.getComponents();
-									}
-									
-									patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
-									        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
-									        lastReturnVisitDay, dateEnrolled.get(0), enrollementDate };
-									listPatientHistory.add(patientSatatus);
-									
-								}
-							}
+							List<Date> maxReturnVisitDay = queryDate2.list();				
+			
 
-							else if (((maxReturnVisitDay.get(0)) == null) && (maxEnocunterDateTime.get(0) != null)) {
-								
-								if ((maxEnocunterDateTime.get(0).getTime()) >= threeMonthsBeforeEndDate.getTime()
-								        && (maxEnocunterDateTime.get(0).getTime()) <= endDate.getTime()) {
-									
-									if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-									        .getRegimenList().size() != 0)
-										regimens = RegimenUtils.getRegimenHistory(
-										    Context.getPatientService().getPatient(patientId)).getRegimenList();
-									
-									for (Regimen r : regimens) {
-										components = r.getComponents();
-									}
-									
-									patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
-									        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
-									        lastReturnVisitDay, dateEnrolled.get(0), enrollementDate };
-									listPatientHistory.add(patientSatatus);
-								}
-							} else if ((maxReturnVisitDay.get(0) != null)
-							        && (maxReturnVisitDay.get(0).getTime()) > endDate.getTime()) {
-								
-								if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-								        .getRegimenList().size() != 0)
-									regimens = RegimenUtils.getRegimenHistory(
-									    Context.getPatientService().getPatient(patientId)).getRegimenList();
-								
-								for (Regimen r : regimens) {
-									components = r.getComponents();
-								}
-								
-								patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
+								patientSatatus = new Object[] {
+								        Context.getPatientService().getPatient(patientId).getPatientIdentifier(),
 								        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
 								        lastReturnVisitDay, dateEnrolled.get(0), enrollementDate };
 								listPatientHistory.add(patientSatatus);
 								
-							}
+							
 							
 						}
 						
@@ -1359,7 +1163,8 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 						//						components = r.getComponents();
 						//					}
 						
-						patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
+						patientSatatus = new Object[] {
+						        Context.getPatientService().getPatient(patientId).getPatientIdentifier(),
 						        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0), lastReturnVisitDay,
 						        lastPharmacyVisitdate, lastPharmacyVisitDate };
 						listPatientHistory.add(patientSatatus);
@@ -1546,7 +1351,8 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 						//						components = r.getComponents();
 						//					}
 						
-						patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
+						patientSatatus = new Object[] {
+						        Context.getPatientService().getPatient(patientId).getPatientIdentifier(),
 						        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0), lastReturnVisitDay,
 						        lastCD4CountTestDate, lastPharmacyVisitDate };
 						listPatientHistory.add(patientSatatus);
@@ -1643,7 +1449,8 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 								components = r.getComponents();
 							}
 							
-							patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
+							patientSatatus = new Object[] {
+							        Context.getPatientService().getPatient(patientId).getPatientIdentifier(),
 							        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
 							        lastReturnVisitDay };
 							listPatientHistory.add(patientSatatus);
@@ -1665,7 +1472,8 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 								components = r.getComponents();
 							}
 							
-							patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
+							patientSatatus = new Object[] {
+							        Context.getPatientService().getPatient(patientId).getPatientIdentifier(),
 							        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
 							        lastReturnVisitDay };
 							listPatientHistory.add(patientSatatus);
@@ -1685,7 +1493,8 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 							components = r.getComponents();
 						}
 						
-						patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
+						patientSatatus = new Object[] {
+						        Context.getPatientService().getPatient(patientId).getPatientIdentifier(),
 						        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0), lastReturnVisitDay };
 						listPatientHistory.add(patientSatatus);
 						
@@ -1720,38 +1529,26 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 			String lastReturnVisitDay = new String("Last Return Visit Date");
 			String regimen = new String("Patient Regimen");
 			List<Regimen> regimens = new ArrayList<Regimen>();
-			Set<RegimenComponent> components = new HashSet<RegimenComponent>();
-			
+			Set<RegimenComponent> components = new HashSet<RegimenComponent>();			
 			Date threeMonthsBeforeEndDate = UsageStatsUtils.addDaysToDate(endDate, -3);
 			
 			SQLQuery query1 = session.createSQLQuery("select distinct pg.patient_id from patient_program pg "
 			        + "inner join person pe on pg.patient_id = pe.person_id "
 			        + "inner join patient pa on pg.patient_id = pa.patient_id "
-			        + "inner join orders ord on pg.patient_id = ord.patient_id "
-			        + "inner join drug_order do on ord.order_id = do.order_id "
-			        /* + "inner join drug d on do.drug_inventory_id = d.drug_id "*/
-			        + "where pg.patient_id in (select person_id from person "
+			        + "inner join orders ord on pg.patient_id = ord.patient_id "		
+			        + "where ((pg.date_completed is null) or(cast(pg.date_completed as DATE)> ' " + df.format(endDate)  + " ')) "
+			       + "and pg.patient_id in (select person_id from person "
 			        + getPatientsAttributes(gender, minAge, maxAge) + ") " + " and ord.concept_id IN ("
 			        + GlobalProperties.gpGetListOfARVsDrugs() + ") "
-			        + "and ord.discontinued=0 and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 "
+			        + " and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 "
 			        + "and pa.voided = 0 and (cast(ord.start_date as DATE)) >= '" + df.format(startDate)
 			        + "' and (cast(ord.start_date as DATE)) <= '" + df.format(endDate) + "' and pg.program_id= " + programId
 			        + " and pg.date_enrolled <= '" + df.format(endDate) + "' ");
+			log.info((">>>>>>>>>>>>new patient on ARV"+query1.toString()));
 			
 			List<Integer> patientIds1 = query1.list();
 			for (Integer patientId : patientIds1) {
-				
-				SQLQuery query2 = session.createSQLQuery("select distinct o.person_id from obs o where o.concept_id = "
-				        + Integer.parseInt(GlobalProperties.gpGetExitFromCareConceptId())
-				        + " and (cast(o.obs_datetime as DATE)) <= '" + df.format(endDate)
-				        + "' and o.voided = 0 and o.person_id=" + patientId);
-				
-				List<Integer> patientIds2 = query2.list();
-				
-				if (patientIds2.size() == 0)
-
-				{
-					
+	
 					SQLQuery queryMinStartDate = session
 					        .createSQLQuery("select (cast(min(ord.start_date)as Date)) from orders ord "
 					                + " inner join drug_order do on ord.order_id = do.order_id "
@@ -1763,10 +1560,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 					                + patientId);
 					
 					List<Date> patientIdsMinStartDate = queryMinStartDate.list();
-					
-					if ((patientIdsMinStartDate.get(0).getTime() >= startDate.getTime())
-					        && (patientIdsMinStartDate.get(0).getTime() <= endDate.getTime())) {
-						
+		
 						SQLQuery queryDate1 = session
 						        .createSQLQuery("select cast(max(encounter_datetime)as DATE) from encounter where "
 						                + "(select(cast(max(encounter_datetime)as Date))) <= '"
@@ -1785,76 +1579,17 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 						                + " and (select cast(max(value_datetime) as DATE )) is not null and voided = 0 and person_id = "
 						                + patientId);
 						
-						List<Date> maxReturnVisitDay = queryDate2.list();
-						
-						if (((maxReturnVisitDay.get(0)) != null) && (maxEnocunterDateTime.get(0) != null)) {
-							
-							if (((maxEnocunterDateTime.get(0).getTime()) >= threeMonthsBeforeEndDate.getTime() && (maxEnocunterDateTime
-							        .get(0).getTime()) <= endDate.getTime())
-							        || ((maxReturnVisitDay.get(0).getTime()) >= threeMonthsBeforeEndDate.getTime() && (maxReturnVisitDay
-							                .get(0).getTime()) <= endDate.getTime())) {
-								
-								if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-								        .getRegimenList().size() != 0)
-									regimens = RegimenUtils.getRegimenHistory(
-									    Context.getPatientService().getPatient(patientId)).getRegimenList();
-								
-								for (Regimen r : regimens) {
-									components = r.getComponents();
-								}
-								
-								patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
-								        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
-								        lastReturnVisitDay };
-								listPatientHistory.add(patientSatatus);
-								
-							}
-						}
+						List<Date> maxReturnVisitDay = queryDate2.list();		
 
-						else if (((maxReturnVisitDay.get(0)) == null) && (maxEnocunterDateTime.get(0) != null)) {
-							
-							if ((maxEnocunterDateTime.get(0).getTime()) >= threeMonthsBeforeEndDate.getTime()
-							        && (maxEnocunterDateTime.get(0).getTime()) <= endDate.getTime()) {
-								
-								if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-								        .getRegimenList().size() != 0)
-									regimens = RegimenUtils.getRegimenHistory(
-									    Context.getPatientService().getPatient(patientId)).getRegimenList();
-								
-								for (Regimen r : regimens) {
-									components = r.getComponents();
-								}
-								
-								patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
-								        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
-								        lastReturnVisitDay };
-								listPatientHistory.add(patientSatatus);
-								
-							}
-						}
-
-						else if ((maxReturnVisitDay.get(0) != null)
-						        && (maxReturnVisitDay.get(0).getTime()) > endDate.getTime())
-
-						{
-							
-							if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-							        .getRegimenList().size() != 0)
-								regimens = RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-								        .getRegimenList();
-							
-							for (Regimen r : regimens) {
-								components = r.getComponents();
-							}
-							
-							patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
+							patientSatatus = new Object[] {
+							        Context.getPatientService().getPatient(patientId).getPatientIdentifier(),
 							        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
 							        lastReturnVisitDay };
 							listPatientHistory.add(patientSatatus);
 							
-						}
-					}
-				}
+					
+					
+				
 				
 			}
 		}
@@ -1990,7 +1725,8 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 										components = r.getComponents();
 									}
 									
-									patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
+									patientSatatus = new Object[] {
+									        Context.getPatientService().getPatient(patientId).getPatientIdentifier(),
 									        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
 									        lastReturnVisitDay };
 									listPatientHistory.add(patientSatatus);
@@ -2012,7 +1748,8 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 										components = r.getComponents();
 									}
 									
-									patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
+									patientSatatus = new Object[] {
+									        Context.getPatientService().getPatient(patientId).getPatientIdentifier(),
 									        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
 									        lastReturnVisitDay };
 									listPatientHistory.add(patientSatatus);
@@ -2034,7 +1771,8 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 									components = r.getComponents();
 								}
 								
-								patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
+								patientSatatus = new Object[] {
+								        Context.getPatientService().getPatient(patientId).getPatientIdentifier(),
 								        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
 								        lastReturnVisitDay };
 								listPatientHistory.add(patientSatatus);
@@ -2198,7 +1936,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 											//										}
 											
 											patientSatatus = new Object[] {
-											        Context.getPatientService().getPatient(patientId),
+											        Context.getPatientService().getPatient(patientId).getPatientIdentifier(),
 											        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
 											        lastReturnVisitDay, maxObsDateTimeCD4Count.get(0), lastPharmacyVisitDate };
 											listPatientHistory.add(patientSatatus);
@@ -2222,7 +1960,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 											//										}
 											
 											patientSatatus = new Object[] {
-											        Context.getPatientService().getPatient(patientId),
+											        Context.getPatientService().getPatient(patientId).getPatientIdentifier(),
 											        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
 											        lastReturnVisitDay, maxObsDateTimeCD4Count.get(0), lastPharmacyVisitDate };
 											listPatientHistory.add(patientSatatus);
@@ -2244,7 +1982,8 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 										//										components = r.getComponents();
 										//									}
 										
-										patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
+										patientSatatus = new Object[] {
+										        Context.getPatientService().getPatient(patientId).getPatientIdentifier(),
 										        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
 										        lastReturnVisitDay, maxObsDateTimeCD4Count.get(0), lastPharmacyVisitDate };
 										listPatientHistory.add(patientSatatus);
@@ -2290,15 +2029,14 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 		try {
 			
 			SQLQuery query1 = session.createSQLQuery("select distinct pg.patient_id from patient_program pg "
-			        + "inner join person pe on pg.patient_id = pe.person_id "
-			        + "inner join patient pa on pg.patient_id = pa.patient_id "
-			        + "inner join orders ord on pg.patient_id = ord.patient_id "
-			        + "inner join drug_order do on ord.order_id = do.order_id "
-			        + "inner join drug d on do.drug_inventory_id = d.drug_id "
-			        + "where pg.patient_id in (select person_id from person "
+					+ "inner join person pe on pg.patient_id = pe.person_id "
+					+ "inner join patient pa on pg.patient_id = pa.patient_id "
+					+ "inner join orders ord on pg.patient_id = ord.patient_id "
+					+ "where ((pg.date_completed is null) or (pg.date_completed > '" + endDate	+ "'))"
+			        + "and pg.patient_id in (select person_id from person "
 			        + getPatientsAttributes(gender, minAge, maxAge) + ") " + " and ord.concept_id IN ("
 			        + GlobalProperties.gpGetListOfFirstLineDrugs()
-			        + ") and ord.discontinued = 0 and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 "
+			        + ") and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 "
 			        + " and pg.date_enrolled <= '" + df.format(endDate)
 			        + "' and pa.voided = 0 and (cast(ord.start_date as DATE)) <= '" + df.format(endDate)
 			        + "' and pg.program_id= " + programId);
@@ -2308,32 +2046,22 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 			for (Integer patientId : patientIds1) {
 				
 				SQLQuery query2 = session.createSQLQuery("select distinct pg.patient_id from patient_program pg "
-				        + "inner join person pe on pg.patient_id = pe.person_id "
-				        + "inner join patient pa on pg.patient_id = pa.patient_id "
-				        + "inner join orders ord on pg.patient_id = ord.patient_id "
-				        + "inner join drug_order do on ord.order_id = do.order_id "
-				        + "inner join drug d on do.drug_inventory_id = d.drug_id "
-				        + "where pg.patient_id in (select person_id from person "
-				        + getPatientsAttributes(gender, minAge, maxAge) + ") " + " and ord.concept_id IN ("
-				        + GlobalProperties.gpGetListOfSecondLineDrugs() + ") "
-				        + "and ord.discontinued=0 and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 "
-				        + "and pa.voided = 0 and (cast(ord.start_date as DATE)) <= '" + df.format(endDate)
-				        + "' and pg.program_id= " + programId + " and pg.date_enrolled <= '" + df.format(endDate)
-				        + "' and pg.patient_id=" + patientId);
+					+ "inner join person pe on pg.patient_id = pe.person_id "
+					+ "inner join patient pa on pg.patient_id = pa.patient_id "
+					+ "inner join orders ord on pg.patient_id = ord.patient_id "
+					+ "where ord.concept_id IN ("
+					+ GlobalProperties.gpGetListOfSecondLineDrugs()
+					+ ") and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 "
+					+ "and pa.voided = 0 and (cast(ord.start_date as DATE)) <= '"
+					+ df.format(endDate)
+					+ "'"
+					+ " and pg.patient_id="
+					+ patientId);
 				
 				List<Integer> patientIds2 = query2.list();
 				
-				if (patientIds2.size() == 0) {
+				if (patientIds2.size() == 0) {					
 					
-					SQLQuery queryExited = session
-					        .createSQLQuery("select distinct o.person_id from obs o where o.concept_id = "
-					                + Integer.parseInt(GlobalProperties.gpGetExitFromCareConceptId())
-					                + " and (cast(o.obs_datetime as DATE)) <= '" + endDate
-					                + "' and o.voided = 0 and o.person_id=" + patientId);
-					
-					List<Integer> patientIds3 = queryExited.list();
-					
-					if (patientIds3.size() == 0) {
 						
 						SQLQuery queryDate1 = session
 						        .createSQLQuery("select cast(max(encounter_datetime)as DATE) from encounter where "
@@ -2351,91 +2079,18 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 						                + "' and concept_id = "
 						                + Integer.parseInt(GlobalProperties.gpGetReturnVisitDateConceptId())
 						                + " and (select cast(max(value_datetime) as DATE )) is not null and voided = 0 and person_id = "
-						                + patientId);
-						
-						List<Date> maxReturnVisitDay = queryDate2.list();
-						
-						if (((maxReturnVisitDay.get(0)) != null) && (maxEnocunterDateTime.get(0) != null)) {
-							
-							if (((maxEnocunterDateTime.get(0).getTime()) >= threeMonthsBeforeEndDate.getTime() && (maxEnocunterDateTime
-							        .get(0).getTime()) <= endDate.getTime())
-							        || ((maxReturnVisitDay.get(0).getTime()) >= threeMonthsBeforeEndDate.getTime() && (maxReturnVisitDay
-							                .get(0).getTime()) <= endDate.getTime())) {
-								
-																if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-																        .getRegimenList().size() != 0)
-																	regimens = RegimenUtils.getRegimenHistory(
-																	    Context.getPatientService().getPatient(patientId)).getRegimenList();
-																
-																for (Regimen r : regimens) {
-																	components = r.getComponents();
-																}
-								
-																patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
-																        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
-																        lastReturnVisitDay, getRegimensAsString(components), regimen };
-																listPatientHistory.add(patientSatatus);
-								
-								patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
-								        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
-								        lastReturnVisitDay };
-								listPatientHistory.add(patientSatatus);
-								
-							}
-						}
-
-						else if (((maxReturnVisitDay.get(0)) == null) && (maxEnocunterDateTime.get(0) != null)) {
-							
-							if ((maxEnocunterDateTime.get(0).getTime()) >= threeMonthsBeforeEndDate.getTime()
-							        && (maxEnocunterDateTime.get(0).getTime()) <= endDate.getTime()) {
-								
-																if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-																        .getRegimenList().size() != 0)
-																	regimens = RegimenUtils.getRegimenHistory(
-																	    Context.getPatientService().getPatient(patientId)).getRegimenList();
-																
-																for (Regimen r : regimens) {
-																	components = r.getComponents();
-																}
-								
-																patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
-																        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
-																        lastReturnVisitDay, getRegimensAsString(components), regimen };
-																listPatientHistory.add(patientSatatus);
-								
-								patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
-								        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
-								        lastReturnVisitDay };
-								listPatientHistory.add(patientSatatus);
-								
-							}
-						} else if ((maxReturnVisitDay.get(0) != null)
-						        && (maxReturnVisitDay.get(0).getTime()) > endDate.getTime())
-
-						{
-							
-													if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-														        .getRegimenList().size() != 0)
-															regimens = RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-															        .getRegimenList();
-														
-														for (Regimen r : regimens) {
-															components = r.getComponents();
-														}
-							
-														patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
-														        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
-														        lastReturnVisitDay, getRegimensAsString(components), regimen };
-														listPatientHistory.add(patientSatatus);
-							
-							patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
+						                + patientId);						
+						List<Date> maxReturnVisitDay = queryDate2.list();						
+					
+							patientSatatus = new Object[] {
+							        Context.getPatientService().getPatient(patientId).getPatientIdentifier(),
 							        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
 							        lastReturnVisitDay };
 							listPatientHistory.add(patientSatatus);
 							
 						}
-					}
-				}
+					
+				
 			}
 		}
 		
@@ -2500,16 +2155,16 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 				
 				List<Date> maxReturnVisitDay = queryDate2.list();
 				
-								if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId)).getRegimenList()
-								        .size() != 0)
-									regimens = RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-									        .getRegimenList();
-								
-								for (Regimen r : regimens) {
-									components = r.getComponents();
-								}
+				if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId)).getRegimenList()
+				        .size() != 0)
+					regimens = RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
+					        .getRegimenList();
 				
-				patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
+				for (Regimen r : regimens) {
+					components = r.getComponents();
+				}
+				
+				patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId).getPatientIdentifier(),
 				        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0), lastReturnVisitDay };
 				listPatientHistory.add(patientSatatus);
 				
@@ -2593,16 +2248,17 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 					
 					List<Date> maxReturnVisitDay = queryDate2.list();
 					
-									if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId)).getRegimenList()
-									        .size() != 0)
-										regimens = RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-										        .getRegimenList();
-									
-									for (Regimen r : regimens) {
-										components = r.getComponents();
-									}
+					if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId)).getRegimenList()
+					        .size() != 0)
+						regimens = RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
+						        .getRegimenList();
 					
-					patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
+					for (Regimen r : regimens) {
+						components = r.getComponents();
+					}
+					
+					patientSatatus = new Object[] {
+					        Context.getPatientService().getPatient(patientId).getPatientIdentifier(),
 					        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0), lastReturnVisitDay };
 					listPatientHistory.add(patientSatatus);
 				}
@@ -2693,16 +2349,17 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 
 						else {
 							
-													if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-													        .getRegimenList().size() != 0)
-														regimens = RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-														        .getRegimenList();
-													
-													for (Regimen r : regimens) {
-														components = r.getComponents();
-													}
+							if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
+							        .getRegimenList().size() != 0)
+								regimens = RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
+								        .getRegimenList();
 							
-							patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
+							for (Regimen r : regimens) {
+								components = r.getComponents();
+							}
+							
+							patientSatatus = new Object[] {
+							        Context.getPatientService().getPatient(patientId).getPatientIdentifier(),
 							        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
 							        lastReturnVisitDay };
 							listPatientHistory.add(patientSatatus);
@@ -2720,16 +2377,17 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 						}
 
 						else {
-													if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-													        .getRegimenList().size() != 0)
-														regimens = RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-														        .getRegimenList();
-													
-													for (Regimen r : regimens) {
-														components = r.getComponents();
-													}
+							if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
+							        .getRegimenList().size() != 0)
+								regimens = RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
+								        .getRegimenList();
 							
-							patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
+							for (Regimen r : regimens) {
+								components = r.getComponents();
+							}
+							
+							patientSatatus = new Object[] {
+							        Context.getPatientService().getPatient(patientId).getPatientIdentifier(),
 							        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
 							        lastReturnVisitDay };
 							listPatientHistory.add(patientSatatus);
@@ -2832,16 +2490,17 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 							        .get(0).getTime() < endDate.getTime()) || (maxReturnVisitDay.get(0).getTime() > threeMonthsBeforeEndDate
 							        .getTime() && maxReturnVisitDay.get(0).getTime() < endDate.getTime()))) {
 								
-															if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-																        .getRegimenList().size() != 0)
-																	regimens = RegimenUtils.getRegimenHistory(
-																	    Context.getPatientService().getPatient(patientId)).getRegimenList();
-																
-																for (Regimen r : regimens) {
-																	components = r.getComponents();
-																}
+								if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
+								        .getRegimenList().size() != 0)
+									regimens = RegimenUtils.getRegimenHistory(
+									    Context.getPatientService().getPatient(patientId)).getRegimenList();
 								
-								patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
+								for (Regimen r : regimens) {
+									components = r.getComponents();
+								}
+								
+								patientSatatus = new Object[] {
+								        Context.getPatientService().getPatient(patientId).getPatientIdentifier(),
 								        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
 								        lastReturnVisitDay };
 								listPatientHistory.add(patientSatatus);
@@ -2854,32 +2513,34 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 							if (((maxEnocunterDateTime.get(0).getTime() > threeMonthsBeforeEndDate.getTime() && maxEnocunterDateTime
 							        .get(0).getTime() < endDate.getTime()))) {
 								
-																if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-																        .getRegimenList().size() != 0)
-																	regimens = RegimenUtils.getRegimenHistory(
-																	    Context.getPatientService().getPatient(patientId)).getRegimenList();
-																
-																for (Regimen r : regimens) {
-																	components = r.getComponents();
-																}
+								if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
+								        .getRegimenList().size() != 0)
+									regimens = RegimenUtils.getRegimenHistory(
+									    Context.getPatientService().getPatient(patientId)).getRegimenList();
 								
-								patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
+								for (Regimen r : regimens) {
+									components = r.getComponents();
+								}
+								
+								patientSatatus = new Object[] {
+								        Context.getPatientService().getPatient(patientId).getPatientIdentifier(),
 								        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
 								        lastReturnVisitDay };
 								listPatientHistory.add(patientSatatus);
 								
 							}
 						} else if (maxReturnVisitDay.get(0).getTime() > endDate.getTime()) {
-													if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-														        .getRegimenList().size() != 0)
-															regimens = RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-															        .getRegimenList();
-														
-														for (Regimen r : regimens) {
-															components = r.getComponents();
-														}
+							if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
+							        .getRegimenList().size() != 0)
+								regimens = RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
+								        .getRegimenList();
 							
-							patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
+							for (Regimen r : regimens) {
+								components = r.getComponents();
+							}
+							
+							patientSatatus = new Object[] {
+							        Context.getPatientService().getPatient(patientId).getPatientIdentifier(),
 							        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
 							        lastReturnVisitDay };
 							listPatientHistory.add(patientSatatus);
@@ -3964,16 +3625,17 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 
 						else {
 							
-													if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-													        .getRegimenList().size() != 0)
-													regimens = RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-														        .getRegimenList();
-													
-													for (Regimen r : regimens) {
-														components = r.getComponents();
-												}
+							if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
+							        .getRegimenList().size() != 0)
+								regimens = RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
+								        .getRegimenList();
 							
-							patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
+							for (Regimen r : regimens) {
+								components = r.getComponents();
+							}
+							
+							patientSatatus = new Object[] {
+							        Context.getPatientService().getPatient(patientId).getPatientIdentifier(),
 							        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
 							        lastReturnVisitDay };
 							listPatientHistory.add(patientSatatus);
@@ -3991,16 +3653,17 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 						}
 
 						else {
-													if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-													        .getRegimenList().size() != 0)
-														regimens = RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
-														        .getRegimenList();
-													
-													for (Regimen r : regimens) {
-														components = r.getComponents();
-													}
+							if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
+							        .getRegimenList().size() != 0)
+								regimens = RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patientId))
+								        .getRegimenList();
 							
-							patientSatatus = new Object[] { Context.getPatientService().getPatient(patientId),
+							for (Regimen r : regimens) {
+								components = r.getComponents();
+							}
+							
+							patientSatatus = new Object[] {
+							        Context.getPatientService().getPatient(patientId).getPatientIdentifier(),
 							        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0),
 							        lastReturnVisitDay };
 							listPatientHistory.add(patientSatatus);

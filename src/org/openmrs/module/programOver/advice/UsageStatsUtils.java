@@ -104,13 +104,50 @@ public class UsageStatsUtils {
 		return --delay;
 	}
 	
-	public static Date calculateAge(int age) {
+	/**
+	 * Calculate birth date from selected date	 * 
+	 * @param age that the patient has at date :endDate
+	 * @param endDate
+	 * @return the date on which the patient is born
+	 */
+	public static Date calculateAge(int age, Date endDate) {
 		
 		Calendar cal = new GregorianCalendar();
+		cal.setTime(endDate);
 		cal.add(Calendar.YEAR, -age);
 		return cal.getTime();
 		
 	}
+	public static int calculateAgeFromBirthDateToAnyDate(Date birthdate, Date onDate){		
+
+        // Use default end date as today.
+        Calendar today = Calendar.getInstance();
+        // But if given, use the given date.
+        if (onDate != null)
+			today.setTime(onDate);      
+
+        Calendar bday = Calendar.getInstance();
+		bday.setTime(birthdate);
+		
+		int age = today.get(Calendar.YEAR) - bday.get(Calendar.YEAR);
+		
+		// Adjust age when today's date is before the person's birthday
+		int todaysMonth = today.get(Calendar.MONTH);
+		int bdayMonth = bday.get(Calendar.MONTH);
+		int todaysDay = today.get(Calendar.DAY_OF_MONTH);
+		int bdayDay = bday.get(Calendar.DAY_OF_MONTH);
+		
+		if (todaysMonth < bdayMonth) {
+			age--;
+		} else if (todaysMonth == bdayMonth && todaysDay < bdayDay) {
+			// we're only comparing on month and day, not minutes, etc
+			age--;
+		}
+		
+		return age;
+		
+	}
+	
 	
 	public static long calculateDiffDays(Date date1, Date date2) {
 		
@@ -174,5 +211,7 @@ public class UsageStatsUtils {
 		return cal.getTime();
 		
 	}
+	
+	
 	
 }

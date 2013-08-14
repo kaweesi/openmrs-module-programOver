@@ -14,31 +14,22 @@
 package org.openmrs.module.programOver.web.controller;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
+
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Session;
+
 import org.hibernate.SessionFactory;
 import org.openmrs.Patient;
-import org.openmrs.Person;
-import org.openmrs.api.context.Context;
-import org.openmrs.module.programOver.advice.UsageStatsUtils;
-import org.openmrs.module.programOver.db.hibernate.ProgramOverviewDAOimpl;
-import org.openmrs.module.regimenhistory.Regimen;
-import org.openmrs.module.regimenhistory.RegimenComponent;
-import org.openmrs.module.regimenhistory.RegimenUtils;
+import org.openmrs.PatientIdentifier;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractController;
-import org.springframework.web.servlet.mvc.ParameterizableViewController;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
 /**
@@ -98,19 +89,11 @@ public class PatientDownloadController extends SimpleFormController {
 	 * @throws IOException
 	 */
 	private void doDownload(HttpServletRequest request, HttpServletResponse response, List<Object[]> listPatientHistory,
-	                        String filename, String title) throws IOException {
-		SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");
-		ServletOutputStream outputStream = response.getOutputStream();
-		List<Regimen> regimens = new ArrayList<Regimen>();
-		Set<RegimenComponent> components = new HashSet<RegimenComponent>();
-		ProgramOverviewDAOimpl programDaoImpl = new ProgramOverviewDAOimpl();
-		
+	                        String filename, String title) throws IOException {		
+		ServletOutputStream outputStream = response.getOutputStream();		
 		List<Object> nameOfeventDate = new ArrayList<Object>();
 		List<Object> returnVisitDates = new ArrayList<Object>();
-		List<Object> consultationDates = new ArrayList<Object>();
-		List<Object> drugTitles = new ArrayList<Object>();
-		List<Object> startingARVDate = new ArrayList<Object>();
-		List<Object> CD4CountDate = new ArrayList<Object>();
+		List<Object> consultationDates = new ArrayList<Object>();		
 		
 		response.setContentType("text/plain");
 		response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
@@ -119,10 +102,8 @@ public class PatientDownloadController extends SimpleFormController {
 		
 		Object eventDate = null;
 		Object eventDate1 = null;
-		Object regimenTitle = null;
-		Object consultatioDatetitle = null;
-		Object startingARV = null;
-		Object CD4count = null;
+		
+		Object consultatioDatetitle = null;	
 		
 		for (Object[] objects : listPatientHistory) {
 			//the object defined below holds the title of added columns
@@ -165,29 +146,24 @@ public class PatientDownloadController extends SimpleFormController {
 			
 			outputStream.println();
 			for (Object[] object : listPatientHistory) {
+				PatientIdentifier patientIdentifier = (PatientIdentifier) object [0];
+				Patient patient = patientIdentifier.getPatient();
 				if (object.length > 3 && object.length <= 5) {
-					Patient patient = (Patient) object[0];
+					
+					
 					
 					Date encounterDate = (Date) object[1];
 					Date returnVisitDay = (Date) object[3];
-					
-//					if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patient.getPatientId()))
-//					        .getRegimenList().size() != 0)
-//						regimens = RegimenUtils.getRegimenHistory(
-//						    Context.getPatientService().getPatient(patient.getPatientId())).getRegimenList();
-//					
-//					for (Regimen r : regimens) {
-//						components = r.getComponents();
-//					}
+	
 					if(patient.getGivenName()!=null){
-					log.info(">>>>>>This is the given nameeeeeeeeeeeeeeeeeeeeeeeee:"+patient.getGivenName());
+					
 					outputStream.println(patient.getPatientId().toString() + " , " + patient.getGivenName().toString()
 			        + " , " + patient.getFamilyName().toString() + " , " + patient.getAge().toString() + " , "
 			        + patient.getGender().toString() + " , " 
 			        + encounterDate + " , " + returnVisitDay);
 					}
 					else{
-						log.info(">>>>>>This is nullllllllllllllllllllllll ");
+						
 						outputStream.println(patient.getPatientId().toString() + " , " + ""
 					        + " , " + patient.getFamilyName().toString() + " , " + patient.getAge().toString() + " , "
 					        + patient.getGender().toString() + " , " 
@@ -203,7 +179,7 @@ public class PatientDownloadController extends SimpleFormController {
 				}
 				
 				if (object.length == 3) {
-					Patient patient = (Patient) object[0];
+					
 					Date encounterDate = (Date) object[1];
 					outputStream.println(patient.getPatientId().toString() + " , " + patient.getGivenName().toString()
 					        + " , " + patient.getFamilyName().toString() + " , " + patient.getAge().toString() + " , "
@@ -211,47 +187,28 @@ public class PatientDownloadController extends SimpleFormController {
 					        + encounterDate);
 					
 				}
-				if (object.length > 5) {
-					
-				
-					
-					Patient patient = (Patient)object[0];					
+				if (object.length > 5) {		
+								
 					Date encounterDate = (Date) object[1];
 					Date returnVisitDay = (Date) object[3];
 					Date consultationDate = (Date) object[5];
 					
-					
-					//Date whenARVStarted=(Date) object[7];
-					//String stringCd4Count= (String) object[9];
-					System.out.println();
-				
-					
-					//System.out.println(" patient whose eligiblity is there");
-					 
 					outputStream.print(patient.getPatientId().toString() + " , " + patient.getGivenName().toString() + " , "
 					        + patient.getFamilyName().toString() + " , " + patient.getAge().toString() + " , "
 					        + patient.getGender().toString() + " , "
 					        + encounterDate + " , " + returnVisitDay);
-					
-//					if (RegimenUtils.getRegimenHistory(Context.getPatientService().getPatient(patient.getPatientId()))
-//					        .getRegimenList().size() != 0)
-//						regimens = RegimenUtils.getRegimenHistory(
-//						    Context.getPatientService().getPatient(patient.getPatientId())).getRegimenList();
+				
 					
 					outputStream.print(" , " + consultationDate);
 					
 					outputStream.println();					
-//					for (Regimen regimen : regimens){
-//						components = regimen.getComponents();						
-//						outputStream.println("," + "" + "," + "" + "," + "" + "," + "" + "," + "" + "," + "" + "," + ""
-//						        + "," + "" + " , " + programDaoImpl.getRegimensAsString(components));
-//					}
+
 					
 				}
 				
 				if (object.length == 1){
 					
-					Patient patient = (Patient) object[0];
+					
 					outputStream.println(patient.getPatientId().toString() + " , " + patient.getGivenName().toString()
 					        + " , " + patient.getFamilyName().toString() + " , " + patient.getAge().toString() + " , "
 					        + patient.getGender().toString());
