@@ -152,6 +152,9 @@ public class GlobalProperties {
 	public static String gpGetyesAsAnswerToTransferredInConceptId(){
 		  return Context.getAdministrationService().getGlobalProperty("programOver.yesAsAnswerToTransferredInConceptId");
 		 }
+	public static String gpGetNonAsAnswerToTransferredInConceptId(){
+		  return Context.getAdministrationService().getGlobalProperty("programOver.NoAsAnswerToTransferredInConceptId");
+		 }
 	
 	public static String gpGetResultForHIVTestConceptId(){
 		  return Context.getAdministrationService().getGlobalProperty("programOver.resultForHIVTestConceptId");

@@ -1376,13 +1376,15 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 					        && patientIdsMinStartDate.get(0).getTime() <= endDate.getTime()) {
 											
 						
-						SQLQuery queryTransferInDate = session.createSQLQuery("select cast(max(obs_datetime)as DATE) from obs where concept_id = "
+						SQLQuery queryTransferInDate = session.createSQLQuery("select cast(min(obs_datetime)as DATE) from obs where concept_id = "
+							
 								+ Integer.parseInt(GlobalProperties.gpGetTransferredInConceptId()) + " and value_coded = "
 						        + Integer.parseInt(GlobalProperties.gpGetyesAsAnswerToTransferredInConceptId())
-						        + " and (select cast(max(obs_datetime)as DATE)) is not null and (select cast(max(obs_datetime)as DATE)) <= "
+						        + " and (select cast(min(obs_datetime)as DATE)) is not null and (select cast(min(obs_datetime)as DATE)) <= "
 				                + "'" + df.format(endDate) + "'" + " and voided = 0 and person_id=" + patientId);
 						
 						List<Date> patientIdsTransferInDate = queryTransferInDate.list();
+						log.info(">>>>>>>>>>>>>>>"+queryTransferInDate.toString());
 						
 						if (patientIdsTransferInDate.get(0)!= null) {
 							
@@ -1419,6 +1421,58 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 				}
 				
 			}
+					
+			if ((patientIdsMinStartDate.get(0).getTime() >= startDate.getTime())
+					        && patientIdsMinStartDate.get(0).getTime() <= endDate.getTime()) {
+											
+						
+				SQLQuery query = session.createSQLQuery("select distinct pg.patient_id from patient_program pg "
+			        + "inner join obs ob on pg.patient_id = ob.person_id "
+			        + "inner join person pe on pg.patient_id = pe.person_id "
+			        + "inner join patient pa on pg.patient_id = pa.patient_id "
+			        + "where  ob.concept_id = "
+			        + Integer.parseInt(GlobalProperties.gpGetTransferredInConceptId()) + " and ob.value_coded = "
+			        + Integer.parseInt(GlobalProperties.gpGetNonAsAnswerToTransferredInConceptId())			      
+			        + " and pg.voided = 0 and ob.voided = 0 and pe.voided = 0 and pa.voided = 0 and pg.patient_id = " + patientId);
+			
+			List<Integer> patientIds = query.list();
+						
+						if (patientIds.size() !=0) {
+							
+							
+							
+							SQLQuery queryDate1 = session
+					        .createSQLQuery("select cast(max(encounter_datetime)as DATE) from encounter where "
+					                + "(select(cast(max(encounter_datetime)as Date))) <= '"
+					                + df.format(endDate)
+					                + "' and (select cast(max(encounter_datetime)as DATE)) is not null and voided = 0 and patient_id = "
+					                + patientId);
+					
+					List<Date> maxEnocunterDateTime = queryDate1.list();
+					
+					SQLQuery queryDate2 = session
+					        .createSQLQuery("select cast(max(value_datetime) as DATE ) "
+					                + "from obs where (select(cast(max(value_datetime)as Date))) <= '"
+					                + df.format(endDate)
+					                + "' and concept_id = "
+					                + Integer.parseInt(GlobalProperties.gpGetReturnVisitDateConceptId())
+					                + " and (select cast(max(value_datetime) as DATE )) is not null and voided = 0 and person_id = "
+					                + patientId);
+					
+					List<Date> maxReturnVisitDay = queryDate2.list();
+					
+					patientSatatus = new Object[] {
+					        Context.getPatientService().getPatient(patientId).getPatientIdentifier(),
+					        maxEnocunterDateTime.get(0), lastEncountDate, maxReturnVisitDay.get(0), lastReturnVisitDay };
+					listPatientHistory.add(patientSatatus);
+					
+							
+							
+							
+							
+				}
+						}
+						
 			
 		}
 		
