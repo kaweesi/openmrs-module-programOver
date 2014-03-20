@@ -117,6 +117,11 @@
 		</globalProperty> 
 		
 		<globalProperty>
+		<property>@MODULE_ID@.NoAsAnswerToTransferredInConceptId</property>
+		<defaultValue>1066</defaultValue> 
+		<description>No As Answer To Transfer in Concept. </description> 		
+		</globalProperty> 
+		<globalProperty>
 		<property>@MODULE_ID@.resultForHIVTestConceptId</property>
 		<defaultValue>2169</defaultValue> 
 		<description>Result For HIV Test Concept . </description> 		
