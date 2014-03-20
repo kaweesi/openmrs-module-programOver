@@ -51,17 +51,17 @@ public class ProgramPatientsController {
 		} else if (programIdKey.equals("transferredPatientsBetweenTwoDates")) {
 			listPatientHistory = service.getAllTransferedPatient(programId, startDate, endDate, gender, minAge, maxAge);
 		}
-
+		
 		else if (programIdKey.equals("patientsWhocameForpharmacyVisitBetweenTwoDates")) {
 			listPatientHistory = service.getAllPatientPharmacyVisit(programId, startDate, endDate, gender, minAge, maxAge);
 		}
-
+		
 		else if (programIdKey.equals("consultedPatientsBetweenTwoDates")) {
 			listPatientHistory = service.getAllConsultedPatient(programId, startDate, endDate, gender, minAge, maxAge);
 		} else if (programIdKey.equals("ARVpatients")) {
 			listPatientHistory = service.getAllARVPatients(programId, startDate, endDate, gender, minAge, maxAge);
 		}
-
+		
 		else if (programIdKey.equals("prophylaxiPatients")) {
 			listPatientHistory = service.getAllProphylaxisPatient(programId, startDate, endDate, gender, minAge, maxAge);
 		} else if (programIdKey.equals("patientsInSecondLine")) {
@@ -80,29 +80,29 @@ public class ProgramPatientsController {
 			    minAge, maxAge, numberOfMonths);
 			
 		}
-
+		
 		else if (programIdKey.equals("newPatientsOnARVs")) {
 			listPatientHistory = service.getAllPatientsNewOnARVsBetweenDate(programId, startDate, endDate, gender, minAge,
 			    maxAge);
 			
 		}
-
+		
 		else if (programIdKey.equals("newPatientsOnProphylaxis")) {
 			listPatientHistory = service.getAllPatientsNewOnProphylaxisBetweenDate(programId, startDate, endDate, gender,
 			    minAge, maxAge);
 			
 		}
-
+		
 		else if (programIdKey.equals("patientsEligibleOnARVsButNotYetStarted")) {
 			listPatientHistory = service.getAllPatientsEligibleForARVsButNotYetStarted(programId, startDate, endDate,
 			    gender, minAge, maxAge);
 		}
-
+		
 		else if (programIdKey.equals("patientsOnFirstLine")) {
 			listPatientHistory = service.getAllPatientsInFirstLine(programId, startDate, endDate, gender, minAge, maxAge);
 			
 		}
-
+		
 		else if (programIdKey.equals("cumulativePatientsOnARVs")) {
 			listPatientHistory = service.getAllCumulativePatientsOnARVs(programId, startDate, endDate, gender, minAge,
 			    maxAge);
@@ -115,29 +115,31 @@ public class ProgramPatientsController {
 			listPatientHistory = service.getAllPatientsActive(programId, startDate, endDate, gender, minAge, maxAge);
 			
 		}
-
+		
 		else if (programIdKey.equals("lostOnFollowUpPatients")) {
 			listPatientHistory = service.getAllPatientsWithNoEncountersBetweenTwoDates(programId, startDate, endDate,
 			    gender, minAge, maxAge);
 			
 		}
-
+		
 		else if (programIdKey.equals("lostOnFollowUpPatientsOnARVsRegimen")) {
 			listPatientHistory = service.getAllARVPatientsLostOnFollowUp(programId, startDate, endDate, gender, minAge,
 			    maxAge);
 		}
 		
 		else if (programIdKey.equals("patientsNewOnSecondLineRegimen")) {
-			listPatientHistory = service.getAllPatientsNewOnSecondLineRegimenBetweenDate(programId, startDate, endDate, gender, minAge, maxAge);
+			listPatientHistory = service.getAllPatientsNewOnSecondLineRegimenBetweenDate(programId, startDate, endDate,
+			    gender, minAge, maxAge);
 		}
 		
-		//		else if (programIdKey.equals("PatientCurrentlyinpmtct")) {
-		//			listPatientHistory = service.getAllPatientsCurrentlyInPMTCT(programId, startDate, endDate, gender, minAge,
-		//			    maxAge, numberOfMonths);
-		//		} else if (programIdKey.equals("PMTCTpatientbetweenthereportingperiod")) {
-		//			listPatientHistory = service.getAllPatientsInPMTCTBetweenTheReportingPeriod(programId, startDate, endDate,
-		//			    gender, minAge, maxAge, numberOfMonths);
-		//		} else if (programIdKey.equals("PositivePatientsInPMTCT")) {
+		else if (programIdKey.equals("patientsTwelveMonthsOnTreatmentAfterInitialisationBetweenReportingPeriod")) {
+			listPatientHistory = service.getAllPatientsOnTreatment12MonthsAfterInitialisationBetweenTheReportingPeriod(
+			    programId, startDate, endDate, gender, minAge, maxAge);
+		} else if (programIdKey
+		        .equals("cumulativesPatientsTwelveMonthsOnTreatmentAfterInitialisationBetweenReportingPeriod")) {
+			listPatientHistory = service.getAllPatientsEvenLostOnFollowUPOnTreatment12MonthsAfterInitialisationBetweenTheReportingPeriod(programId, startDate, endDate, gender, minAge, maxAge);
+		}
+		// else if (programIdKey.equals("PositivePatientsInPMTCT")) {
 		//			listPatientHistory = service.getAllPatientsInPMTCTWhoAreSeroPositifBetweenTheReportinPeriod(programId,
 		//			    startDate, endDate, gender, minAge, maxAge, numberOfMonths);
 		//		} else if (programIdKey.equals("NegativePatientsInPMTCT")) {
@@ -219,11 +221,12 @@ public class ProgramPatientsController {
 						
 						Date startDat = startDate;
 						Date endDat = df.parse("31/12/" + year);
-						numberOfPatientByYear.put(year, checkTypeController(programIdKey, programId, startDat, endDat,
-						    gender, minAge, maxAge, numberOfMonths).size());
+						numberOfPatientByYear.put(
+						    year,
+						    checkTypeController(programIdKey, programId, startDat, endDat, gender, minAge, maxAge,
+						        numberOfMonths).size());
 						
-							
-							;
+						;
 						continue;
 						
 					}
@@ -231,17 +234,21 @@ public class ProgramPatientsController {
 						Date startDat = df.parse("01/01/" + year);
 						Date endDat = endDate;
 						
-						numberOfPatientByYear.put(year, checkTypeController(programIdKey, programId, startDat, endDat,
-						    gender, minAge, maxAge, numberOfMonths).size());
+						numberOfPatientByYear.put(
+						    year,
+						    checkTypeController(programIdKey, programId, startDat, endDat, gender, minAge, maxAge,
+						        numberOfMonths).size());
 						
 						continue;
 						
 					}
 					Date startDat = df.parse("01/01/" + year);
 					Date endDat = df.parse("31/12/" + year);
-
-					numberOfPatientByYear.put(year, checkTypeController(programIdKey, programId, startDat, endDat, gender,
-					    minAge, maxAge, numberOfMonths).size());
+					
+					numberOfPatientByYear.put(
+					    year,
+					    checkTypeController(programIdKey, programId, startDat, endDat, gender, minAge, maxAge,
+					        numberOfMonths).size());
 					continue;
 					
 				}
@@ -268,8 +275,10 @@ public class ProgramPatientsController {
 						Date startDat = startDate;
 						Date endDat = UsageStatsUtils.getTheLastDayOfThemonth(startYear, months - 1);
 						
-						numberOfPatientByYear.put(months, checkTypeController(programIdKey, programId, startDat, endDat,
-						    gender, minAge, maxAge, numberOfMonths).size());
+						numberOfPatientByYear.put(
+						    months,
+						    checkTypeController(programIdKey, programId, startDat, endDat, gender, minAge, maxAge,
+						        numberOfMonths).size());
 						continue;
 						
 					}
@@ -278,18 +287,21 @@ public class ProgramPatientsController {
 						Date startDat = df.parse("01/" + months + "/" + startYear);
 						Date endDat = endDate;
 						
-						numberOfPatientByYear.put(months, checkTypeController(programIdKey, programId, startDat, endDat,
-						    gender, minAge, maxAge, numberOfMonths).size());
+						numberOfPatientByYear.put(
+						    months,
+						    checkTypeController(programIdKey, programId, startDat, endDat, gender, minAge, maxAge,
+						        numberOfMonths).size());
 						continue;
 						
 					}
 					
-					
 					Date startDat = df.parse("01/" + months + "/" + startYear);
 					Date endDat = UsageStatsUtils.getTheLastDayOfThemonth(startYear, months - 1);
 					
-					numberOfPatientByYear.put(months, checkTypeController(programIdKey, programId, startDat, endDat, gender,
-					    minAge, maxAge, numberOfMonths).size());
+					numberOfPatientByYear.put(
+					    months,
+					    checkTypeController(programIdKey, programId, startDat, endDat, gender, minAge, maxAge,
+					        numberOfMonths).size());
 					
 				}
 				catch (ParseException e) {

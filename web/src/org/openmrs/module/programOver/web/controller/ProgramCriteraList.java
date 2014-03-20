@@ -31,43 +31,43 @@ public class ProgramCriteraList {
 		        "consultedPatientsBetweenTwoDates", "patientsWhocameForpharmacyVisitBetweenTwoDates",
 		        "patientsEnrolledInAProgram", "patientsOnARVWithoutVisitingPharmacyForXDays",
 		        "patientsWithoutCD4CountsForXDays", "patientsCurrentlyActive", "patientsEligibleOnARVsButNotYetStarted",
-		        "lostOnFollowUpPatientsOnARVsRegimen", "lostOnFollowUpPatients" };
+		        "lostOnFollowUpPatientsOnARVsRegimen", "lostOnFollowUpPatients",
+		        "patientsTwelveMonthsOnTreatmentAfterInitialisationBetweenReportingPeriod",
+		        "cumulativesPatientsTwelveMonthsOnTreatmentAfterInitialisationBetweenReportingPeriod" };
 		String[] HIVExposureCriteria = {};
 		
 		String[] criteriaBasedOnProgram = null;
 		
-//		if (programId == 1) {
-//		criteriaBasedOnProgram= new String[PMTCTcriteria.length];
-//		for (int i = 0; i < PMTCTcriteria.length; i++){
-//			criteriaBasedOnProgram[i] = PMTCTcriteria[i];
-//			
-//		}
-//		
-//	} 
-	if (programId == Integer.parseInt(GlobalProperties.gpGetHIVProgramId())){
-		
-		
-		criteriaBasedOnProgram= new String[criteriaWithParameters.length];
-		for (int i = 0; i < criteriaWithParameters.length; i++){
+		//		if (programId == 1) {
+		//		criteriaBasedOnProgram= new String[PMTCTcriteria.length];
+		//		for (int i = 0; i < PMTCTcriteria.length; i++){
+		//			criteriaBasedOnProgram[i] = PMTCTcriteria[i];
+		//			
+		//		}
+		//		
+		//	} 
+		if (programId == Integer.parseInt(GlobalProperties.gpGetHIVProgramId())) {
 			
-			
-			criteriaBasedOnProgram[i] = criteriaWithParameters[i];
+			criteriaBasedOnProgram = new String[criteriaWithParameters.length];
+			for (int i = 0; i < criteriaWithParameters.length; i++) {
+				
+				criteriaBasedOnProgram[i] = criteriaWithParameters[i];
+				
+			}
 			
 		}
 		
-	}
-	
-//	if(programId != Integer.parseInt(GlobalProperties.gpGetHIVProgramId()))
-//	{
-//		criteriaBasedOnProgram = null;
-//	}
-//	if (programId==3) {
-//		
-//		
-//		
-//        
-//    }
-	return  criteriaBasedOnProgram;
+		//	if(programId != Integer.parseInt(GlobalProperties.gpGetHIVProgramId()))
+		//	{
+		//		criteriaBasedOnProgram = null;
+		//	}
+		//	if (programId==3) {
+		//		
+		//		
+		//		
+		//        
+		//    }
+		return criteriaBasedOnProgram;
 		
 	}
 	

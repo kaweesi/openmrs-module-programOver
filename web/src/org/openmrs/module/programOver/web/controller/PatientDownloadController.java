@@ -97,7 +97,9 @@ public class PatientDownloadController extends SimpleFormController {
 		
 		response.setContentType("text/plain");
 		response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
-		outputStream.println("" + title);
+		outputStream.println("Indicator:" + title);
+		//outputStream.println();
+		outputStream.println("Number of patients:" +listPatientHistory.size());
 		outputStream.println();
 		
 		Object eventDate = null;
@@ -114,14 +116,14 @@ public class PatientDownloadController extends SimpleFormController {
 				eventDate1 = returnVisitDates.get(0);
 				//drugTitles.add(objects[6]);
 				//regimenTitle = drugTitles.get(0);
-				outputStream.println("Identifier , Given Name , Family Name , Age , Gender , " + eventDate
+				outputStream.println("Number, Patient Identifier , Given Name , Family Name , Age , Gender , " + eventDate
 				        + ", " + eventDate1 + "");
 				
 			}
 			if (objects.length == 3) {
 				nameOfeventDate.add(objects[2]);
 				eventDate = nameOfeventDate.get(0);
-				outputStream.println("Identifier , Given Name , Family Name , Age , Gender , " + eventDate + "");
+				outputStream.println("Number, Patient Identifier , Given Name , Family Name , Age , Gender , " + eventDate + "");
 				
 			}
 			if (objects.length > 5){
@@ -138,14 +140,16 @@ public class PatientDownloadController extends SimpleFormController {
 				//CD4CountDate.add(objects[10]);
 				
 				
-				outputStream.println("Identifier , Given Name , Family Name , Age , Gender , " + eventDate
+				outputStream.println("Number, Patient Identifier , Given Name , Family Name , Age , Gender , " + eventDate
 				        + " , " + eventDate1 + "," + consultatioDatetitle  +  "");
 			}
 						//outputStream
 					     //   .println("Identifier , Given Name , Family Name , Age , Gender , Birth Day , last encounter date , return visit day , regimen");
 			
 			outputStream.println();
+			int number=0;
 			for (Object[] object : listPatientHistory) {
+				number=number+1;
 				PatientIdentifier patientIdentifier = (PatientIdentifier) object [0];
 				Patient patient = patientIdentifier.getPatient();
 				if (object.length > 3 && object.length <= 5) {
@@ -157,14 +161,14 @@ public class PatientDownloadController extends SimpleFormController {
 	
 					if(patient.getGivenName()!=null){
 					
-					outputStream.println(patient.getPatientId().toString() + " , " + patient.getGivenName().toString()
+					outputStream.println(number +" ,"+ patientIdentifier.getIdentifier().toString() + " , " + patient.getGivenName().toString()
 			        + " , " + patient.getFamilyName().toString() + " , " + patient.getAge().toString() + " , "
 			        + patient.getGender().toString() + " , " 
 			        + encounterDate + " , " + returnVisitDay);
 					}
 					else{
 						
-						outputStream.println(patient.getPatientId().toString() + " , " + ""
+						outputStream.println(number +" ," + patientIdentifier.getIdentifier().toString() + " , " + ""
 					        + " , " + patient.getFamilyName().toString() + " , " + patient.getAge().toString() + " , "
 					        + patient.getGender().toString() + " , " 
 					        + encounterDate + " , " + returnVisitDay);
@@ -181,7 +185,7 @@ public class PatientDownloadController extends SimpleFormController {
 				if (object.length == 3) {
 					
 					Date encounterDate = (Date) object[1];
-					outputStream.println(patient.getPatientId().toString() + " , " + patient.getGivenName().toString()
+					outputStream.println(number +" ,"+ patientIdentifier.getIdentifier().toString() + " , " + patient.getGivenName().toString()
 					        + " , " + patient.getFamilyName().toString() + " , " + patient.getAge().toString() + " , "
 					        + patient.getGender().toString() + " , "
 					        + encounterDate);
@@ -193,7 +197,7 @@ public class PatientDownloadController extends SimpleFormController {
 					Date returnVisitDay = (Date) object[3];
 					Date consultationDate = (Date) object[5];
 					
-					outputStream.print(patient.getPatientId().toString() + " , " + patient.getGivenName().toString() + " , "
+					outputStream.print(number +" ,"+ patientIdentifier.getIdentifier().toString() + " , " + patient.getGivenName().toString() + " , "
 					        + patient.getFamilyName().toString() + " , " + patient.getAge().toString() + " , "
 					        + patient.getGender().toString() + " , "
 					        + encounterDate + " , " + returnVisitDay);
@@ -209,7 +213,7 @@ public class PatientDownloadController extends SimpleFormController {
 				if (object.length == 1){
 					
 					
-					outputStream.println(patient.getPatientId().toString() + " , " + patient.getGivenName().toString()
+					outputStream.println(number +" ,"+ patientIdentifier.getIdentifier().toString() + " , " + patient.getGivenName().toString()
 					        + " , " + patient.getFamilyName().toString() + " , " + patient.getAge().toString() + " , "
 					        + patient.getGender().toString());
 					
