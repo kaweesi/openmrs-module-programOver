@@ -147,4 +147,11 @@ public interface ProgramOverviewService {
 	                                                                                              Date minAge, Date maxAge,
 	                                                                                              int numberOfMonths);
 	
+	public List<Object[]>getAllPatientsOnTreatment12MonthsAfterInitialisationBetweenTheReportingPeriod(int programId,Date startDate,Date endDate, String gender, Date minAge, Date maxAge);
+	
+	
+	public List<Object[]>getAllPatientsEvenLostOnFollowUPOnTreatment12MonthsAfterInitialisationBetweenTheReportingPeriod(int programId,Date startDate,Date endDate, String gender, Date minAge, Date maxAge);
+	
+	public List<Object[]> getAllNewPregnantWomenOnARVs(int programId, Date startDate, Date endDate, String gender, Date minAge, Date maxAge);
+	
 }

@@ -433,5 +433,45 @@ public class ProgramOverviewServiceImpl implements ProgramOverviewService {
 	    // TODO Auto-generated method stub
 	    return null;
     }
+
+	/**
+     * @see org.openmrs.module.programOver.service.ProgramOverviewService#getAllPatientsOnTreatment12MonthsAfterInitialisationBetweenTheReportingPeriod(int, java.util.Date, java.util.Date, java.lang.String, java.util.Date, java.util.Date)
+     */
+    @Override
+    public List<Object[]> getAllPatientsOnTreatment12MonthsAfterInitialisationBetweenTheReportingPeriod(int programId,
+                                                                                                        Date startDate,
+                                                                                                        Date endDate,
+                                                                                                        String gender,
+                                                                                                        Date minAge,
+                                                                                                        Date maxAge) {
+	    // TODO Auto-generated method stub
+	    return programOverviewDAO.getAllPatientsOnTreatment12MonthsAfterInitialisationBetweenTheReportingPeriod(programId, startDate, endDate, gender, minAge, maxAge);
+    }
+
+	/**
+     * @see org.openmrs.module.programOver.service.ProgramOverviewService#getAllPatientsEvenLostOnFollowUPOnTreatment12MonthsAfterInitialisationBetweenTheReportingPeriod(int, java.util.Date, java.util.Date, java.lang.String, java.util.Date, java.util.Date)
+     */
+    @Override
+    public List<Object[]> getAllPatientsEvenLostOnFollowUPOnTreatment12MonthsAfterInitialisationBetweenTheReportingPeriod(int programId,
+                                                                                                                          Date startDate,
+                                                                                                                          Date endDate,
+                                                                                                                          String gender,
+                                                                                                                          Date minAge,
+                                                                                                                          Date maxAge) {
+	    // TODO Auto-generated method stub
+	    return programOverviewDAO.getAllPatientsEvenLostOnFollowUPOnTreatment12MonthsAfterInitialisationBetweenTheReportingPeriod(programId, startDate, endDate, gender, minAge, maxAge);
+    }
+
+	/**
+     * @see org.openmrs.module.programOver.service.ProgramOverviewService#getAllNewPregnantWomenOnARVs(int, java.util.Date, java.util.Date, java.lang.String, java.util.Date, java.util.Date)
+     */
+    @Override
+    public List<Object[]> getAllNewPregnantWomenOnARVs(int programId, Date startDate, Date endDate, String gender,
+                                                       Date minAge, Date maxAge) {
+	    // TODO Auto-generated method stub
+	    return programOverviewDAO.getAllNewPregnantWomenOnARVs(programId, startDate, endDate, gender, minAge, maxAge);
+    }
+    
+  
 	
 }
