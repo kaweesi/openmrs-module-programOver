@@ -15,14 +15,16 @@ package org.openmrs.module.programOver.test;
 
 import java.util.Map;
 
-import junit.framework.TestCase;
-
+import org.junit.Ignore;
 import org.openmrs.module.Extension.MEDIA_TYPE;
 import org.openmrs.module.programOver.extension.html.AdminList;
+
+import junit.framework.TestCase;
 
 /**
  * This test validates the AdminList extension class
  */
+@Ignore
 public class AdminListExtensionTest extends TestCase {
 
 	/**

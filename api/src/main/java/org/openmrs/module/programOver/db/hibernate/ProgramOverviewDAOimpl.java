@@ -476,7 +476,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 		        
 		        + ") " + " and ord.concept_id IN (" + GlobalProperties.gpGetListOfARVsDrugs()
 		        + ") and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 "
-		        + "and pa.voided = 0 and (cast(ord.start_date as DATE)) <= '" + df.format(endDate) + "' and pg.program_id= "
+		        + "and pa.voided = 0 and (cast(ord.date_activated as DATE)) <= '" + df.format(endDate) + "' and pg.program_id= "
 		        + programId + " and pg.date_enrolled <= '" + df.format(endDate) + "' ");
 		
 		//log.info(" Patients on ART>>>>>>>>>>" + query1.toString());
@@ -541,7 +541,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 		        + "and pg.patient_id in (select person_id from person " + getPatientsAttributes(gender, minAge, maxAge)
 		        + ") " + " and ord.concept_id IN (" + GlobalProperties.gpGetListOfProphylaxisDrugs()
 		        + ") and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 " + " and pg.date_enrolled <= '"
-		        + df.format(endDate) + "' and pa.voided = 0 and (cast(ord.start_date as DATE)) <= '" + df.format(endDate)
+		        + df.format(endDate) + "' and pa.voided = 0 and (cast(ord.date_activated as DATE)) <= '" + df.format(endDate)
 		        + "' and pg.program_id= " + programId);
 		//log.info(">>>>>>>>>>>>>>>>>>>>first line"+query1.toString());
 		
@@ -555,7 +555,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 			        + "inner join orders ord on pg.patient_id = ord.patient_id " 
 			        + "where ord.concept_id IN ("
 			        + GlobalProperties.gpGetListOfARVsDrugs() + ") and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 "
-			        + "and pa.voided = 0 and (cast(ord.start_date as DATE)) <= '" + df.format(endDate) + "'"
+			        + "and pa.voided = 0 and (cast(ord.date_activated as DATE)) <= '" + df.format(endDate) + "'"
 			        + " and pg.patient_id=" + patientId);
 			
 			List<Integer> patientIds2 = query2.list();
@@ -628,7 +628,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 			        + getPatientsAttributes(gender, minAge, maxAge) + ") " + " and ord.concept_id IN ("
 			        + GlobalProperties.gpGetListOfSecondLineDrugs() + ") "
 			        + " and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 "
-			        + "and pa.voided = 0 and (cast(ord.start_date as DATE)) <= '" + df.format(endDate)
+			        + "and pa.voided = 0 and (cast(ord.date_activated as DATE)) <= '" + df.format(endDate)
 			        + "' and pg.program_id= " + programId);
 			
 			//log.info(">>>>>>>>>>>>patient in second line" + query1.toString());
@@ -1349,8 +1349,8 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 		        + " where pg.patient_id in (select person_id from person " + getPatientsAttributes(gender, minAge, maxAge)
 		        + ") " + " and ord.concept_id IN (" + GlobalProperties.gpGetListOfARVsDrugs() + ") "
 		        + " and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 "
-		        + "and pa.voided = 0 and (cast(ord.start_date as DATE)) >= '" + df.format(startDate)
-		        + "' and (cast(ord.start_date as DATE)) <= '" + df.format(endDate) + "' and pg.program_id= " + programId
+		        + "and pa.voided = 0 and (cast(ord.date_activated as DATE)) >= '" + df.format(startDate)
+		        + "' and (cast(ord.date_activated as DATE)) <= '" + df.format(endDate) + "' and pg.program_id= " + programId
 		        + " and pg.date_enrolled <= '" + df.format(endDate) + "' ");
 		
 		List<Integer> patientIds1 = query1.list();
@@ -1359,13 +1359,13 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 			
 				
 				SQLQuery queryMinStartDate = session
-				        .createSQLQuery("select (cast(min(ord.start_date)as Date)) from orders ord "
+				        .createSQLQuery("select (cast(min(ord.date_activated)as Date)) from orders ord "
 				                // + " inner join drug_order do on ord.order_id = do.order_id "
 				                // + " inner join drug d on do.drug_inventory_id = d.drug_id "
 				                + " where ord.concept_id IN ("
 				                + GlobalProperties.gpGetListOfARVsDrugs()
 				                + ") "
-				                + " and (select (cast(min(ord.start_date)as Date))) is not null and ord.voided = 0 and ord.patient_id = "
+				                + " and (select (cast(min(ord.date_activated)as Date))) is not null and ord.voided = 0 and ord.patient_id = "
 				                + patientId);
 				
 				List<Date> patientIdsMinStartDate = queryMinStartDate.list();
@@ -1517,8 +1517,8 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 			        + getPatientsAttributes(gender, minAge, maxAge) + ") " + " and ord.concept_id IN ("
 			        + GlobalProperties.gpGetListOfProphylaxisDrugs() + ") "
 			        + "and ord.discontinued=0 and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 "
-			        + "and pa.voided = 0 and (cast(ord.start_date as DATE)) >= '" + df.format(startDate)
-			        + "' and (cast(ord.start_date as DATE)) <= '" + df.format(endDate) + "' and pg.program_id= " + programId
+			        + "and pa.voided = 0 and (cast(ord.date_activated as DATE)) >= '" + df.format(startDate)
+			        + "' and (cast(ord.date_activated as DATE)) <= '" + df.format(endDate) + "' and pg.program_id= " + programId
 			        + " and pg.date_enrolled <= '" + df.format(endDate) + "' ");
 			
 			List<Integer> patientIds1 = query1.list();
@@ -1536,8 +1536,8 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 				                + getPatientsAttributes(gender, minAge, maxAge) + ") " + " and ord.concept_id IN ("
 				                + GlobalProperties.gpGetListOfARVsDrugs() + ") "
 				                + "and ord.discontinued=0 and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 "
-				                + "and pa.voided = 0 and (cast(ord.start_date as DATE)) >= '" + df.format(startDate)
-				                + "' and (cast(ord.start_date as DATE)) <= '" + df.format(endDate) + "' and pg.program_id= "
+				                + "and pa.voided = 0 and (cast(ord.date_activated as DATE)) >= '" + df.format(startDate)
+				                + "' and (cast(ord.date_activated as DATE)) <= '" + df.format(endDate) + "' and pg.program_id= "
 				                + programId + " and pg.date_enrolled <= '" + df.format(endDate) + "' and pg.patient_id="
 				                + patientId);
 				
@@ -1548,13 +1548,13 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 				{
 					
 					SQLQuery queryMinStartDate = session
-					        .createSQLQuery("select (cast(min(ord.start_date)as Date)) from orders ord "
+					        .createSQLQuery("select (cast(min(ord.date_activated)as Date)) from orders ord "
 					                // + " inner join drug_order do on ord.order_id = do.order_id "
 					                // + " inner join drug d on do.drug_inventory_id = d.drug_id "
 					                + " where ord.concept_id IN ("
 					                + GlobalProperties.gpGetListOfProphylaxisDrugs()
 					                + ") "
-					                + " and (select (cast(min(ord.start_date)as Date))) is not null and ord.voided = 0 and ord.patient_id = "
+					                + " and (select (cast(min(ord.date_activated)as Date))) is not null and ord.voided = 0 and ord.patient_id = "
 					                + patientId);
 					
 					List<Date> patientIdsMinStartDate = queryMinStartDate.list();
@@ -1687,7 +1687,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 							                + " and ord.concept_id IN ("
 							                + GlobalProperties.gpGetListOfARVsDrugs()
 							                + ") "
-							                + " and (cast(ord.start_date as DATE)) <= '"
+							                + " and (cast(ord.date_activated as DATE)) <= '"
 							                + df.format(endDate)
 							                + "' and pg.voided= 0 and pe.voided = 0 and pa.voided = 0 and ord.voided = 0 and pg.program_id= "
 							                + programId + " and pg.patient_id =  " + patientId);
@@ -1832,7 +1832,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 			        + "and pg.patient_id in (select person_id from person " + getPatientsAttributes(gender, minAge, maxAge)
 			        + ") " + " and ord.concept_id IN (" + GlobalProperties.gpGetListOfFirstLineDrugs()
 			        + ") and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 " + " and pg.date_enrolled <= '"
-			        + df.format(endDate) + "' and pa.voided = 0 and (cast(ord.start_date as DATE)) <= '"
+			        + df.format(endDate) + "' and pa.voided = 0 and (cast(ord.date_activated as DATE)) <= '"
 			        + df.format(endDate) + "' and pg.program_id= " + programId);
 			log.info(">>>>>>>>>>>>>>>>>>>>first line" + query1.toString());
 			
@@ -1846,7 +1846,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 				        + "inner join orders ord on pg.patient_id = ord.patient_id " + "where ord.concept_id IN ("
 				        + GlobalProperties.gpGetListOfSecondLineDrugs()
 				        + ") and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 "
-				        + "and pa.voided = 0 and (cast(ord.start_date as DATE)) <= '" + df.format(endDate) + "'"
+				        + "and pa.voided = 0 and (cast(ord.date_activated as DATE)) <= '" + df.format(endDate) + "'"
 				        + " and pg.patient_id=" + patientId);
 				
 				List<Integer> patientIds2 = query2.list();
@@ -1914,7 +1914,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 			        // + "where ((pg.date_completed is null) or (pg.date_completed > '" + df.format(endDate)	+ "')) "
 			        + " and  pg.patient_id in (select person_id from person "
 			        + getPatientsAttributes(gender, minAge, maxAge) + ") " + " and ord.concept_id IN ("
-			        + GlobalProperties.gpGetListOfARVsDrugs() + ") " + " " + "and (cast(ord.start_date as DATE)) <= '"
+			        + GlobalProperties.gpGetListOfARVsDrugs() + ") " + " " + "and (cast(ord.date_activated as DATE)) <= '"
 			        + df.format(endDate) + "' and pg.program_id= " + programId);
 			//log.info(">>>>>>>>>>>query cumulative>>>>"+query1.toString());
 			List<Integer> patientIds1 = query1.list();
@@ -1979,7 +1979,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 			        //+ "where ((pg.date_completed is null) or (pg.date_completed > '" + df.format(endDate)	+ "')) "
 			        + " and pg.patient_id in (select person_id from person " + getPatientsAttributes(gender, minAge, maxAge)
 			        + ") " + " and ord.concept_id IN (" + GlobalProperties.gpGetListOfProphylaxisDrugs() + ") "
-			        + " and (cast(ord.start_date as DATE)) <= '" + df.format(endDate) + "' " + " and pg.date_enrolled <= '"
+			        + " and (cast(ord.date_activated as DATE)) <= '" + df.format(endDate) + "' " + " and pg.date_enrolled <= '"
 			        + df.format(endDate) + "' and pg.program_id= " + programId);
 			
 			List<Integer> patientIds1 = query1.list();
@@ -2074,7 +2074,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 			        + "where pg.patient_id in (select person_id from person "
 			        + getPatientsAttributes(gender, minAge, maxAge) + ") "
 			        + " and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 and o.voided = 0 "
-			        + " and pa.voided = 0 and (cast(ord.start_date as DATE)) <= '" + df.format(endDate)
+			        + " and pa.voided = 0 and (cast(ord.date_activated as DATE)) <= '" + df.format(endDate)
 			        + "' and ((pg.date_completed is null) or (pg.date_completed > '" + endDate + "')) and pg.program_id= "
 			        + programId);
 			
@@ -3227,7 +3227,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 		
 		StringBuffer strbuf = new StringBuffer();
 		
-		strbuf.append("SELECT min(o.start_date) FROM orders o  ");
+		strbuf.append("SELECT min(o.date_activated) FROM orders o  ");
 		strbuf.append("INNER JOIN drug_order dro on dro.order_id = o.order_id  AND ");
 		strbuf.append("dro.drug_inventory_id<>22 and dro.drug_inventory_id<>27 AND dro.drug_inventory_id<>37 "
 		        + "AND dro.drug_inventory_id<>23 AND dro.drug_inventory_id<>24 ");
@@ -3338,7 +3338,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 			        + getPatientsAttributes(gender, minAge, maxAge) + ") " + " and ord.concept_id IN ("
 			        + GlobalProperties.gpGetListOfARVsDrugs() + ") "
 			        + "and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 and o.voided = 0 "
-			        + "and pa.voided = 0 and (cast(ord.start_date as DATE)) <= '" + df.format(endDate)
+			        + "and pa.voided = 0 and (cast(ord.date_activated as DATE)) <= '" + df.format(endDate)
 			        + "' and ((pg.date_completed is null) or (pg.date_completed > '" + endDate + "')) and pg.program_id= "
 			        + programId);
 			
@@ -3459,7 +3459,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 			                + ") "
 			                + " and ord.concept_id in (796,633,628,635,631,625,802,797,2203,1613,814,5424,792,5811,630,2833) "
 			                + "and ord.discontinued = 0 and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 and o.voided = 0 "
-			                + "and pa.voided = 0 and en.voided = 0 and o.concept_id <> 1811  and (cast(ord.start_date as DATE)) <= '"
+			                + "and pa.voided = 0 and en.voided = 0 and o.concept_id <> 1811  and (cast(ord.date_activated as DATE)) <= '"
 			                + df.format(endDate) + "' and o.concept_id = 5096 " + "and pg.program_id= " + programId);
 			
 			List<Integer> patientIds1 = query1.list();
@@ -3478,7 +3478,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 				                + ") "
 				                + " and (ord.concept_id = 794 or ord.concept_id = 749 or ord.concept_id = 795) "
 				                + "and ord.discontinued_date is null and (pg.voided = 0 and pe.voided = 0 and ord.voided = 0 and o.voided = 0 "
-				                + "and pa.voided = 0 and en.voided = 0) and o.concept_id <> 1811 and (cast(ord.start_date as DATE)) <= '"
+				                + "and pa.voided = 0 and en.voided = 0) and o.concept_id <> 1811 and (cast(ord.date_activated as DATE)) <= '"
 				                + df.format(endDate) + "' and o.concept_id = 5096 and pg.program_id= " + programId
 				                + " and pg.patient_id=" + patientId);
 				
@@ -3698,7 +3698,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 									                + getPatientsAttributes(gender, minAge, maxAge)
 									                + ") "
 									                + " and ord.concept_id in (796,633,628,794,635,631,625,802,797,2203,1613,749,795,814,5424,792,5811,630,2833) "
-									                + "and (cast(ord.start_date as DATE)) <= '" + df.format(endDate)
+									                + "and (cast(ord.date_activated as DATE)) <= '" + df.format(endDate)
 									                + "' and pg.program_id= " + programId + " and ord.patient_id =  "
 									                + patientId);
 									
@@ -3907,7 +3907,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 									                + getPatientsAttributes(gender, minAge, maxAge)
 									                + ") "
 									                + " and ord.concept_id in (796,633,628,794,635,631,625,802,797,2203,1613,749,795,814,5424,792,5811,630,2833) "
-									                + "and (cast(ord.start_date as DATE)) <= '" + df.format(endDate)
+									                + "and (cast(ord.date_activated as DATE)) <= '" + df.format(endDate)
 									                + "' and pg.program_id= " + programId + " and ord.patient_id =  "
 									                + patientId);
 									
@@ -4116,7 +4116,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 									                + getPatientsAttributes(gender, minAge, maxAge)
 									                + ") "
 									                + " and ord.concept_id in (796,633,628,794,635,631,625,802,797,2203,1613,749,795,814,5424,792,5811,630,2833) "
-									                + "and (cast(ord.start_date as DATE)) <= '" + df.format(endDate)
+									                + "and (cast(ord.date_activated as DATE)) <= '" + df.format(endDate)
 									                + "' and pg.program_id= " + programId + " and ord.patient_id =  "
 									                + patientId);
 									
@@ -4329,7 +4329,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 			//								                + getPatientsAttributes(gender, minAge, maxAge)
 			//								                + ") "
 			//								                + " and d.concept_id in (796,633,628,794,635,631,625,802,797,2203,1613,749,795,814,5424,792,5811,630,2833) "
-			//								                + "and (cast(ord.start_date as DATE)) <= '" + df.format(endDate)
+			//								                + "and (cast(ord.date_activated as DATE)) <= '" + df.format(endDate)
 			//								                + "' and pg.program_id= " + programId
 			//								                + " and pg.date_completed is null and ord.patient_id =  " + patientId);
 			//								
@@ -4478,8 +4478,8 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 			        + getPatientsAttributes(gender, minAge, maxAge) + ") " + " and ord.concept_id IN ("
 			        + GlobalProperties.gpGetListOfSecondLineDrugs() + ") "
 			        + "and ord.discontinued=0 and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 "
-			        + "and pa.voided = 0 and (cast(ord.start_date as DATE)) >= '" + df.format(startDate)
-			        + "' and (cast(ord.start_date as DATE)) <= '" + df.format(endDate) + "' and pg.program_id= " + programId
+			        + "and pa.voided = 0 and (cast(ord.date_activated as DATE)) >= '" + df.format(startDate)
+			        + "' and (cast(ord.date_activated as DATE)) <= '" + df.format(endDate) + "' and pg.program_id= " + programId
 			        + " and pg.date_enrolled <= '" + df.format(endDate) + "' ");
 			
 			List<Integer> patientIds1 = query1.list();
@@ -4497,13 +4497,13 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 				{
 					
 					SQLQuery queryMinStartDate = session
-					        .createSQLQuery("select (cast(min(ord.start_date)as Date)) from orders ord "
+					        .createSQLQuery("select (cast(min(ord.date_activated)as Date)) from orders ord "
 					                + " inner join drug_order do on ord.order_id = do.order_id "
 					                + " inner join drug d on do.drug_inventory_id = d.drug_id "
 					                + " where ord.concept_id IN ("
 					                + GlobalProperties.gpGetListOfSecondLineDrugs()
 					                + ") "
-					                + " and (select (cast(min(ord.start_date)as Date))) is not null and ord.voided = 0 and ord.patient_id = "
+					                + " and (select (cast(min(ord.date_activated)as Date))) is not null and ord.voided = 0 and ord.patient_id = "
 					                + patientId);
 					
 					List<Date> patientIdsMinStartDate = queryMinStartDate.list();
@@ -4640,8 +4640,8 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 		        + " and pg.patient_id in (select person_id from person " + getPatientsAttributes(gender, minAge, maxAge)
 		        + ") " + " and ord.concept_id IN (" + GlobalProperties.gpGetListOfARVsDrugs() + ") "
 		        + " and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 "
-		        + "and pa.voided = 0 and (cast(ord.start_date as DATE)) >= '" + df.format(startDate)
-		        + "' and (cast(ord.start_date as DATE)) <= '" + df.format(endDate) + "' and pg.program_id= " + programId
+		        + "and pa.voided = 0 and (cast(ord.date_activated as DATE)) >= '" + df.format(startDate)
+		        + "' and (cast(ord.date_activated as DATE)) <= '" + df.format(endDate) + "' and pg.program_id= " + programId
 		        + " and pg.date_enrolled <= '" + df.format(endDate) + "' ");
 		
 		List<Integer> patientIds1 = query1.list();
@@ -4650,13 +4650,13 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 			
 				
 				SQLQuery queryMinStartDate = session
-				        .createSQLQuery("select (cast(min(ord.start_date)as Date)) from orders ord "
+				        .createSQLQuery("select (cast(min(ord.date_activated)as Date)) from orders ord "
 				                // + " inner join drug_order do on ord.order_id = do.order_id "
 				                // + " inner join drug d on do.drug_inventory_id = d.drug_id "
 				                + " where ord.concept_id IN ("
 				                + GlobalProperties.gpGetListOfARVsDrugs()
 				                + ") "
-				                + " and (select (cast(min(ord.start_date)as Date))) is not null and ord.voided = 0 and ord.patient_id = "
+				                + " and (select (cast(min(ord.date_activated)as Date))) is not null and ord.voided = 0 and ord.patient_id = "
 				                + patientId);
 				
 				List<Date> patientIdsMinStartDate = queryMinStartDate.list();
@@ -4752,8 +4752,8 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 		        + " where pg.patient_id in (select person_id from person " + getPatientsAttributes(gender, minAge, maxAge)
 		        + ") " + " and ord.concept_id IN (" + GlobalProperties.gpGetListOfARVsDrugs() + ") "
 		        + " and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 "
-		        + "and pa.voided = 0 and (cast(ord.start_date as DATE)) >= '" + df.format(startDate)
-		        + "' and (cast(ord.start_date as DATE)) <= '" + df.format(endDate) + "' and pg.program_id= " + programId
+		        + "and pa.voided = 0 and (cast(ord.date_activated as DATE)) >= '" + df.format(startDate)
+		        + "' and (cast(ord.date_activated as DATE)) <= '" + df.format(endDate) + "' and pg.program_id= " + programId
 		        + " and pg.date_enrolled <= '" + df.format(endDate) + "' ");
 		
 		List<Integer> patientIds1 = query1.list();
@@ -4762,13 +4762,13 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 			
 				
 				SQLQuery queryMinStartDate = session
-				        .createSQLQuery("select (cast(min(ord.start_date)as Date)) from orders ord "
+				        .createSQLQuery("select (cast(min(ord.date_activated)as Date)) from orders ord "
 				                // + " inner join drug_order do on ord.order_id = do.order_id "
 				                // + " inner join drug d on do.drug_inventory_id = d.drug_id "
 				                + " where ord.concept_id IN ("
 				                + GlobalProperties.gpGetListOfARVsDrugs()
 				                + ") "
-				                + " and (select (cast(min(ord.start_date)as Date))) is not null and ord.voided = 0 and ord.patient_id = "
+				                + " and (select (cast(min(ord.date_activated)as Date))) is not null and ord.voided = 0 and ord.patient_id = "
 				                + patientId);
 				
 				List<Date> patientIdsMinStartDate = queryMinStartDate.list();
@@ -4859,8 +4859,8 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 		        + " where pg.patient_id in (select person_id from person " + getPatientsAttributes(gender, minAge, maxAge)
 		        + ") " + " and ord.concept_id IN (" + GlobalProperties.gpGetListOfARVsDrugs() + ") "
 		        + " and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 "
-		        + "and pa.voided = 0 and (cast(ord.start_date as DATE)) >= '" + df.format(startDate)
-		        + "' and (cast(ord.start_date as DATE)) <= '" + df.format(endDate) + "' and pg.program_id= " + programId
+		        + "and pa.voided = 0 and (cast(ord.date_activated as DATE)) >= '" + df.format(startDate)
+		        + "' and (cast(ord.date_activated as DATE)) <= '" + df.format(endDate) + "' and pg.program_id= " + programId
 		        + " and pg.date_enrolled <= '" + df.format(endDate) + "' ");
 		
 		List<Integer> patientIds1 = query1.list();
@@ -4869,13 +4869,13 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 			
 				
 				SQLQuery queryMinStartDate = session
-				        .createSQLQuery("select (cast(min(ord.start_date)as Date)) from orders ord "
+				        .createSQLQuery("select (cast(min(ord.date_activated)as Date)) from orders ord "
 				                // + " inner join drug_order do on ord.order_id = do.order_id "
 				                // + " inner join drug d on do.drug_inventory_id = d.drug_id "
 				                + " where ord.concept_id IN ("
 				                + GlobalProperties.gpGetListOfARVsDrugs()
 				                + ") "
-				                + " and (select (cast(min(ord.start_date)as Date))) is not null and ord.voided = 0 and ord.patient_id = "
+				                + " and (select (cast(min(ord.date_activated)as Date))) is not null and ord.voided = 0 and ord.patient_id = "
 				                + patientId);
 				
 				List<Date> patientIdsMinStartDate = queryMinStartDate.list();

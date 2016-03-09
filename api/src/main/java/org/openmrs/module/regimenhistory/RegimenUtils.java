@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -12,16 +13,59 @@ import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.Patient;
+import org.openmrs.Provider;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.programOver.MoHDrugOrder;
 import org.openmrs.util.OpenmrsUtil;
 
 public class RegimenUtils {
 
     protected final Log log = LogFactory.getLog(getClass());
     
+  //TODO Remove and use mohorderentrybridge module
+    public static List<MoHDrugOrder> getMoHDrugOrdersByPatient(Patient patient) {
+		List<Order> orderList = Context.getOrderService().getAllOrdersByPatient(patient);
+		List<MoHDrugOrder> drugOrders = new ArrayList<MoHDrugOrder>();
+
+		List<Patient> patients = new Vector<Patient>();
+		patients.add(patient);
+		for(Order order: orderList) {
+			if("org.openmrs.DrugOrder".equals(order.getOrderType().getJavaClassName()) && order instanceof DrugOrder) {
+				MoHDrugOrder mohDOrder = new MoHDrugOrder((DrugOrder) order);
+				
+				drugOrders.add(mohDOrder);
+			}
+		}
+		return drugOrders;
+	}
+    
+    //TODO Remove and use mohorderentrybridge module
+    public static List<DrugOrder> getDrugOrdersByPatient(Patient patient) {
+    	List<MoHDrugOrder> mohDrugOrders = getMoHDrugOrdersByPatient(patient);
+    	List<DrugOrder> drugOrders = new ArrayList<DrugOrder>();
+    	
+    	for(MoHDrugOrder mohDrugOrder : mohDrugOrders) {
+    		drugOrders.add(mohDrugOrder.getDrugOrder());
+    	}
+    	return drugOrders;
+    }
+    
+    //TODO remove and use one provided in mohorderentrybridge module
+    public static Provider getFirstCurrentProvider() {
+    	Collection<Provider> activPproviders = Context.getProviderService().getProvidersByPerson(Context.getAuthenticatedUser().getPerson());
+		Provider provider = null;
+		
+		for (Provider prov : activPproviders) {
+			provider = prov;
+			break;
+		}
+		
+		return provider;
+    }
+    
     public static RegimenHistory getRegimenHistory(Patient patient) {
-        return new RegimenHistory(Context.getOrderService().getDrugOrdersByPatient(patient));
+        return new RegimenHistory(getDrugOrdersByPatient(patient));
     }
     
     
@@ -70,7 +114,7 @@ public class RegimenUtils {
                 //case:  there is no existing regimen on the regimen start date, and there are no new regimens after this date
                 // go ahead and create the regimen:
                 for (DrugOrder drugOrder : drugOrders) {
-                    Context.getOrderService().saveOrder(drugOrder);
+                    Context.getOrderService().saveOrder(drugOrder, null);
                 }
             } else {
 
@@ -80,7 +124,7 @@ public class RegimenUtils {
                     //stop the old order only if it isn't exactly identical to a new order (excluding discontinued_date)
                     for (DrugOrder newOrder:drugOrders){
                         //but either concept or drug is the same
-                        if (!before.getDrugOrder().getDiscontinued() && drugOrderMatchesDrugConcept(before.getDrugOrder(), newOrder) && !regimenComponentIsTheSameAsDrugOrderExcludingDates(before.getDrugOrder(), newOrder)){
+                        if (!before.getDrugOrder().isDiscontinuedRightNow() && drugOrderMatchesDrugConcept(before.getDrugOrder(), newOrder) && !regimenComponentIsTheSameAsDrugOrderExcludingDates(before.getDrugOrder(), newOrder)){
                             discontinueOrder( before.getDrugOrder(), effectiveDate, reasonForChange);
                         }    
                     }
@@ -95,19 +139,19 @@ public class RegimenUtils {
                         boolean alreadyExists = false;
                         for (RegimenComponent before : regOnDate.getComponents()){
                             
-                            if (!before.getDrugOrder().getDiscontinued() && regimenComponentIsTheSameAsDrugOrderExcludingDates(before.getDrugOrder(), newOrder)){
+                            if (!before.getDrugOrder().isDiscontinuedRightNow() && regimenComponentIsTheSameAsDrugOrderExcludingDates(before.getDrugOrder(), newOrder)){
                                 alreadyExists = true;
-                                before.getDrugOrder().setDiscontinuedDate(newOrder.getDiscontinuedDate());
+                                //before.getDrugOrder().setDiscontinuedDate(newOrder.getEffectiveStopDate());//TODO
                                 before.getDrugOrder().setAutoExpireDate(newOrder.getAutoExpireDate());
-                                before.getDrugOrder().setPrn(newOrder.getPrn());
+                                before.getDrugOrder().setAsNeeded(newOrder.getAsNeeded());
                                 before.getDrugOrder().setInstructions(newOrder.getInstructions());
-                                os.saveOrder(before.getDrugOrder());
+                                os.saveOrder(before.getDrugOrder(), null);
                                 newOrder.setOrderId(before.getDrugOrder().getOrderId());
                                 break;
                             }
                         }
                         if (!alreadyExists){
-                            os.saveOrder(newOrder);
+                            os.saveOrder(newOrder, null);
                         }
                 }
             }
@@ -121,22 +165,22 @@ public class RegimenUtils {
                           saveOrder = setSaveOrder(merged); //(OUTCOME1)
                   } else { 
                         for (DrugOrder before : existingDrugOrders){ 
-                            if (newOrder.getStartDate().before(before.getStartDate())){ 
-                                    if (newOrder.getDiscontinuedDate() != null){
-                                        if (newOrder.getDiscontinuedDate().before(before.getStartDate()) || newOrder.getDiscontinuedDate().equals(before.getStartDate())){
+                            if (newOrder.getEffectiveStartDate().before(before.getEffectiveStartDate())){ 
+                                    if (newOrder.getEffectiveStopDate() != null){
+                                        if (newOrder.getEffectiveStopDate().before(before.getEffectiveStartDate()) || newOrder.getEffectiveStopDate().equals(before.getEffectiveStartDate())){
                                             saveOrder = setSaveOrder(merged);//(OUTCOME2)
-                                        } else if (newOrder.getDiscontinuedDate().after(before.getStartDate()) && (before.getDiscontinuedDate() == null || newOrder.getDiscontinuedDate().before(before.getDiscontinuedDate()))){
+                                        } else if (newOrder.getEffectiveStopDate().after(before.getEffectiveStartDate()) && (before.getEffectiveStopDate() == null || newOrder.getEffectiveStopDate().before(before.getEffectiveStopDate()))){
                                             if (!regimenComponentIsTheSameAsDrugOrderExcludingDates(before, newOrder)){
                                                 //(OUTCOME3)
-                                                before.setStartDate(newOrder.getDiscontinuedDate());
-                                                os.saveOrder(before);
+                                                before.setDateActivated(newOrder.getEffectiveStopDate());
+                                                os.saveOrder(before, null);
                                                 saveOrder = setSaveOrder(merged);
                                             } else {
                                                 //(OUTCOME4)    
                                                 os.voidOrder(before, "overwritten");
                                                 saveOrder = setSaveOrder(merged);
                                             }   
-                                        } else if (before.getDiscontinuedDate() != null && (newOrder.getDiscontinuedDate().after(before.getDiscontinuedDate()) || newOrder.getDiscontinuedDate().equals(before.getDiscontinuedDate()))){
+                                        } else if (before.getEffectiveStopDate() != null && (newOrder.getEffectiveStopDate().after(before.getEffectiveStopDate()) || newOrder.getEffectiveStopDate().equals(before.getEffectiveStopDate()))){
                                                 //(OUTCOME5)
                                                 os.voidOrder(before, "overwritten");
                                                 saveOrder = setSaveOrder(merged);
@@ -144,7 +188,7 @@ public class RegimenUtils {
                                     } else {//new order has infinite end date
                                         if (!regimenComponentIsTheSameAsDrugOrderExcludingDates(before, newOrder)){
                                           //(OUTCOME6)
-                                                newOrder.setDiscontinuedDate(before.getStartDate());
+                                                newOrder.setAutoExpireDate(before.getEffectiveStartDate());
                                                 saveOrder = setSaveOrder(merged);
                                                 break;
                                         } else {
@@ -153,30 +197,30 @@ public class RegimenUtils {
                                             saveOrder = setSaveOrder(merged);
                                         }
                                     }         
-                            } else if (newOrder.getStartDate().equals(before.getStartDate())){ //b
+                            } else if (newOrder.getEffectiveStartDate().equals(before.getEffectiveStartDate())){ //b
                                 //(OUTCOME8)
                                 os.voidOrder(before, "overwritten");
                                 saveOrder = setSaveOrder(merged);
                             } else { //c -- start date is after or equal to old end date
-                                if (before.getDiscontinuedDate() != null && newOrder.getStartDate().after(before.getDiscontinuedDate()))//1
+                                if (before.getEffectiveStopDate() != null && newOrder.getEffectiveStartDate().after(before.getEffectiveStopDate()))//1
                                     //(OUTCOME9)
                                     saveOrder = setSaveOrder(merged);
                                     
-                                if (before.getDiscontinuedDate() == null || newOrder.getStartDate().before(before.getDiscontinuedDate()) || newOrder.getStartDate().equals(before.getDiscontinuedDate())){//2
+                                if (before.getEffectiveStopDate() == null || newOrder.getEffectiveStartDate().before(before.getEffectiveStopDate()) || newOrder.getEffectiveStartDate().equals(before.getEffectiveStopDate())){//2
                                     if (regimenComponentIsTheSameAsDrugOrderExcludingDates(before, newOrder)){
                                       //(OUTCOME10)  
-                                        before.setDiscontinuedDate(newOrder.getDiscontinuedDate());
+                                       // before.setDiscontinuedDate(newOrder.getEffectiveStopDate());//TODO
                                         before.setAutoExpireDate(newOrder.getAutoExpireDate());
-                                        before.setPrn(newOrder.getPrn());
+                                        before.setAsNeeded(newOrder.getAsNeeded());
                                         before.setInstructions(newOrder.getInstructions());
-                                        os.saveOrder(before);
+                                        os.saveOrder(before, null);
                                         saveOrder = false;
                                         newOrder.setOrderId(before.getOrderId());
                                         merged = true;
                                     } else {
                                       //(OUTCOME11)  
-                                        before.setDiscontinuedDate(newOrder.getStartDate());
-                                        os.saveOrder(before);
+                                        before.setAutoExpireDate(newOrder.getEffectiveStartDate());
+                                        os.saveOrder(before, null);
                                         saveOrder = setSaveOrder(merged);
                                     }
                                 }
@@ -184,7 +228,7 @@ public class RegimenUtils {
                         }
                   }
                   if (saveOrder)
-                      os.saveOrder(newOrder);
+                      os.saveOrder(newOrder, null);
             }      
         }
     }
@@ -200,17 +244,17 @@ public class RegimenUtils {
      * @should have no effect if order is discontinued before date
      */
     public static void discontinueOrder(Order order, Date date, Concept reason) {
-        if (!order.isDiscontinuedRightNow()) {
-            order.setDiscontinued(true);
-            order.setDiscontinuedDate(date);
-            order.setDiscontinuedReason(reason);
-            Context.getOrderService().saveOrder(order);
-        } else if (OpenmrsUtil.compareWithNullAsLatest(date, order.getDiscontinuedDate()) < 0) {
-            order.setDiscontinued(true); // should already be true
-            order.setDiscontinuedDate(date);
-            order.setDiscontinuedReason(reason);
-            Context.getOrderService().saveOrder(order);
-        }
+    	try {
+	    	if (!order.isDiscontinuedRightNow()) {
+	            Context.getOrderService().discontinueOrder(order, reason, date, getFirstCurrentProvider(), order.getEncounter());
+	        } else if (OpenmrsUtil.compareWithNullAsLatest(date, order.getEffectiveStopDate()) < 0) {
+	        	
+					Context.getOrderService().discontinueOrder(order, reason, date, getFirstCurrentProvider(), order.getEncounter());
+				
+	        }
+        } catch (Exception e) {
+			e.printStackTrace();
+		}
     }
 
     /**
@@ -235,7 +279,7 @@ public class RegimenUtils {
             return false;
         if (!OpenmrsUtil.nullSafeEquals(rc.getFrequency(), doTmp.getFrequency()))
             return false;    
-        if (!OpenmrsUtil.nullSafeEquals(rc.getUnits(), doTmp.getUnits()))
+        if (!OpenmrsUtil.nullSafeEquals(rc.getDoseUnits(), doTmp.getDoseUnits()))
             return false;    
         return true;
     }
@@ -298,7 +342,7 @@ public class RegimenUtils {
                     else
                         ret += rc.getDrug().getName();
                     if (includeDosages)
-                        ret += " (" + rc.getDrugOrder().getDose() + " " + rc.getDrugOrder().getUnits()+ " " + rc.getDrugOrder().getFrequency() + ")";
+                        ret += " (" + rc.getDrugOrder().getDose() + " " + rc.getDrugOrder().getDoseUnits()+ " " + rc.getDrugOrder().getFrequency() + ")";
                     if (count != total )
                         ret += sepparator;
                     count ++;
@@ -319,15 +363,3 @@ public class RegimenUtils {
         return ret;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
