@@ -30,7 +30,6 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-
 import org.openmrs.Concept;
 import org.openmrs.Patient;
 import org.openmrs.Person;
@@ -40,9 +39,9 @@ import org.openmrs.module.programOver.GlobalProperties;
 import org.openmrs.module.programOver.advice.UsageStatsUtils;
 import org.openmrs.module.programOver.db.ProgramOverviewDAO;
 import org.openmrs.module.programOver.utils.QueryUtility;
+import org.openmrs.module.programOver.utils.RegimenUtils;
 import org.openmrs.module.regimenhistory.Regimen;
 import org.openmrs.module.regimenhistory.RegimenComponent;
-import org.openmrs.module.regimenhistory.RegimenUtils;
 
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.ParseException;
 
@@ -1516,7 +1515,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 			        + "where pg.patient_id in (select person_id from person "
 			        + getPatientsAttributes(gender, minAge, maxAge) + ") " + " and ord.concept_id IN ("
 			        + GlobalProperties.gpGetListOfProphylaxisDrugs() + ") "
-			        + "and ord.discontinued=0 and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 "
+			        + "and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 "
 			        + "and pa.voided = 0 and (cast(ord.date_activated as DATE)) >= '" + df.format(startDate)
 			        + "' and (cast(ord.date_activated as DATE)) <= '" + df.format(endDate) + "' and pg.program_id= " + programId
 			        + " and pg.date_enrolled <= '" + df.format(endDate) + "' ");
@@ -1535,7 +1534,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 				                + "where pg.patient_id in (select person_id from person "
 				                + getPatientsAttributes(gender, minAge, maxAge) + ") " + " and ord.concept_id IN ("
 				                + GlobalProperties.gpGetListOfARVsDrugs() + ") "
-				                + "and ord.discontinued=0 and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 "
+				                + "and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 "
 				                + "and pa.voided = 0 and (cast(ord.date_activated as DATE)) >= '" + df.format(startDate)
 				                + "' and (cast(ord.date_activated as DATE)) <= '" + df.format(endDate) + "' and pg.program_id= "
 				                + programId + " and pg.date_enrolled <= '" + df.format(endDate) + "' and pg.patient_id="
@@ -2191,7 +2190,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 			        + "inner join orders ord on pg.patient_id = ord.patient_id "
 			        + "where pg.patient_id in (select person_id from person "
 			        + getPatientsAttributes(gender, minAge, maxAge) + ") " + " and ord.concept_id = 1482 "
-			        + "and ord.discontinued = 0 and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 and o.voided = 0 "
+			        + "and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 and o.voided = 0 "
 			        + "and pa.voided = 0 and en.voided = 0 and o.concept_id <> 1811 and (cast(o.obs_datetime as Date)) >= '"
 			        + df.format(startDate) + "' and (cast(o.obs_datetime as Date)) <= '" + df.format(endDate)
 			        + "' and  pg.program_id= " + programId + " and pg.date_completed is null ");
@@ -3458,7 +3457,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 			                + getPatientsAttributes(gender, minAge, maxAge)
 			                + ") "
 			                + " and ord.concept_id in (796,633,628,635,631,625,802,797,2203,1613,814,5424,792,5811,630,2833) "
-			                + "and ord.discontinued = 0 and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 and o.voided = 0 "
+			                + "and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 and o.voided = 0 "
 			                + "and pa.voided = 0 and en.voided = 0 and o.concept_id <> 1811  and (cast(ord.date_activated as DATE)) <= '"
 			                + df.format(endDate) + "' and o.concept_id = 5096 " + "and pg.program_id= " + programId);
 			
@@ -3477,7 +3476,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 				                + getPatientsAttributes(gender, minAge, maxAge)
 				                + ") "
 				                + " and (ord.concept_id = 794 or ord.concept_id = 749 or ord.concept_id = 795) "
-				                + "and ord.discontinued_date is null and (pg.voided = 0 and pe.voided = 0 and ord.voided = 0 and o.voided = 0 "
+				                + "and ord.date_stopped is null and (pg.voided = 0 and pe.voided = 0 and ord.voided = 0 and o.voided = 0 "
 				                + "and pa.voided = 0 and en.voided = 0) and o.concept_id <> 1811 and (cast(ord.date_activated as DATE)) <= '"
 				                + df.format(endDate) + "' and o.concept_id = 5096 and pg.program_id= " + programId
 				                + " and pg.patient_id=" + patientId);
@@ -4477,7 +4476,7 @@ public class ProgramOverviewDAOimpl implements ProgramOverviewDAO {
 			        + "where pg.patient_id in (select person_id from person "
 			        + getPatientsAttributes(gender, minAge, maxAge) + ") " + " and ord.concept_id IN ("
 			        + GlobalProperties.gpGetListOfSecondLineDrugs() + ") "
-			        + "and ord.discontinued=0 and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 "
+			        + "and pg.voided = 0 and pe.voided = 0 and ord.voided = 0 "
 			        + "and pa.voided = 0 and (cast(ord.date_activated as DATE)) >= '" + df.format(startDate)
 			        + "' and (cast(ord.date_activated as DATE)) <= '" + df.format(endDate) + "' and pg.program_id= " + programId
 			        + " and pg.date_enrolled <= '" + df.format(endDate) + "' ");

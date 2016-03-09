@@ -23,17 +23,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.hibernate.Session;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.programOver.advice.UsageStatsUtils;
-import org.openmrs.module.programOver.db.hibernate.ProgramOverviewDAOimpl;
 import org.openmrs.module.programOver.service.ProgramOverviewService;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
 /**
  *

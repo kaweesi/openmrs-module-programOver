@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE module PUBLIC "-//OpenMRS//DTD OpenMRS Config 1.2//EN" "http://resources.openmrs.org/doctype/config-1.2.dtd">
 
 <module configVersion="1.2">
 	
@@ -18,8 +17,11 @@
 	<!-- <updateURL>https://dev.openmrs.org/modules/download/@MODULE_ID@/update.rdf</updateURL> -->
 	<!-- /Base Module Properties -->
 	
-	<require_version>${SH_OPENMRS_VERSION}</require_version>
+	<require_version>${openMRSVersion}</require_version>
 	
+	<require_module version="${mohorderentrybridgeVersion}">
+		org.openmrs.module.mohorderentrybridge
+	</require_module>
 	<!-- Extensions -->
 	<extension>
 		<point>org.openmrs.tracmodule.list</point>

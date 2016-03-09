@@ -50,6 +50,7 @@
 
 	<properties>
 		<openMRSVersion>1.11.5</openMRSVersion>
+		<mohorderentrybridgeVersion>1.0-beta</mohorderentrybridgeVersion>
 	</properties>
 
 	<build>
