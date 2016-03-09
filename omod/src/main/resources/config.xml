@@ -19,9 +19,11 @@
 	
 	<require_version>${openMRSVersion}</require_version>
 	
-	<require_module version="${mohorderentrybridgeVersion}">
-		org.openmrs.module.mohorderentrybridge
-	</require_module>
+	<require_modules>
+		<require_module version="${mohorderentrybridgeVersion}">
+			org.openmrs.module.mohorderentrybridge
+		</require_module>
+	</require_modules>
 	<!-- Extensions -->
 	<extension>
 		<point>org.openmrs.tracmodule.list</point>

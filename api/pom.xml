@@ -32,8 +32,8 @@
 		<dependency>
 			<groupId>org.openmrs.module</groupId>
 			<artifactId>mohorderentrybridge-api</artifactId>
-			<scope>provided</scope>
 			<version>${mohorderentrybridgeVersion}</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 
